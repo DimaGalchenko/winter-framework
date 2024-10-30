@@ -1,1 +1,1 @@
-# winter-core
+# Winter Framework
