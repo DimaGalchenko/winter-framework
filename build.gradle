@@ -2,6 +2,8 @@ plugins {
     id 'java'
 }
 
+apply from: 'version.gradle'
+
 group = 'com.codeus.winter'
 version = '1.0-SNAPSHOT'
 
@@ -10,10 +12,30 @@ repositories {
 }
 
 dependencies {
-    testImplementation platform('org.junit:junit-bom:5.10.0')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
+    // Reflection
+    implementation "org.reflections:reflections:${versions.reflections}"
+
+    // Apache Commons
+    implementation "org.apache.commons:commons-lang3:${versions.commons_lang}"
+    implementation "org.apache.commons:commons-collections4:${versions.commons_collections}"
+
+    // Log4j
+    implementation "org.apache.logging.log4j:log4j-core:${versions.log4j}"
+    implementation "org.apache.logging.log4j:log4j-api:${versions.log4j}"
+
+    // JUnit Jupiter
+    testImplementation platform("org.junit:junit-bom:${versions.junit}")
+    testImplementation "org.junit.jupiter:junit-jupiter"
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.release = 21
 }
 
 test {
     useJUnitPlatform()
+}
+
+wrapper {
+    gradleVersion '8.8'
 }
