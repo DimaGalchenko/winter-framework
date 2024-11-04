@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'checkstyle'
 }
 
 apply from: 'version.gradle'
@@ -28,8 +29,17 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter"
 }
 
+checkstyle {
+    toolVersion = versions.checkstyle
+}
+
+tasks.withType(Checkstyle).configureEach {
+    println "Using Checkstyle config file: ${configFile.absolutePath}"
+    configFile = file("${project.rootDir}/config/checkstyle/checkstyle.xml")
+}
+
 tasks.withType(JavaCompile).configureEach {
-    options.release = 21
+    options.release.set(21)
 }
 
 test {

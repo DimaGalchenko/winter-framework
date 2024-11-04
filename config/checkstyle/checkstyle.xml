@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<module name="Checker">
+    <module name="TreeWalker">
+        <!-- Checking for spaces around operators -->
+        <module name="WhitespaceAround">
+            <property name="tokens" value="ASSIGN, PLUS, MINUS, STAR, SLASH, PERCENT,
+                BITWISE_AND, BITWISE_OR, BITWISE_XOR, EQUAL, NOT_EQUAL,
+                LESS, GREATER, LESS_EQUAL, GREATER_EQUAL,
+                LITERAL_INSTANCEOF,
+                COMMA, SEMI, LPAREN, RPAREN, LITERAL_IF, LITERAL_WHILE,
+                LITERAL_FOR, LITERAL_SWITCH, LITERAL_DO, LITERAL_TRY,
+                LITERAL_CATCH, LITERAL_FINALLY"/>
+        </module>
+
+        <!-- Checking for spaces between methods -->
+        <module name="SeparatorWrap" />
+
+        <!-- Checking for newlines between methods -->
+        <module name="NewlineAtEndOfFile" />
+
+        <!-- Checking string length -->
+        <module name="LineLength">
+            <property name="max" value="120"/>
+        </module>
+
+        <!-- Checking for JavaDocs for Classes and Methods -->
+        <module name="JavadocType">
+            <property name="scope" value="public"/>
+        </module>
+        <module name="JavadocMethod">
+            <property name="scope" value="public"/>
+        </module>
+
+        <!-- Checking the naming of classes -->
+        <module name="ClassName">
+            <property name="format" value="^[A-Z][a-zA-Z0-9]*$"/>
+        </module>
+
+        <!-- Checking method naming -->
+        <module name="MethodName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+        </module>
+
+        <!-- Checking the naming of variables -->
+        <module name="VariableName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+        </module>
+
+        <!-- Checking for comments -->
+        <module name="MissingJavadocType"/>
+        <module name="MissingJavadocMethod"/>
+    </module>
+</module>
