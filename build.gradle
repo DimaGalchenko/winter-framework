@@ -40,3 +40,7 @@ test {
 wrapper {
     gradleVersion '8.8'
 }
+
+dependencyCheck {
+    suppressionFile = "${project.rootDir}/dependency-check-suppressions.xml"
+}
