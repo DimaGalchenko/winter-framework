@@ -6,5 +6,6 @@ ext {
             'log4j': '2.23.1',
             'junit': '5.10.3',
             'owasp_dependency_check': '11.1.0'
+
     ]
 }
