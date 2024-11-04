@@ -1,8 +1,10 @@
 package com.codeus.winter.config;
 
-import com.codeus.winter.exception.BeansException;
+import com.codeus.winter.exception.BeanNotFoundException;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
+
+import java.lang.reflect.InvocationTargetException;
 
 public interface BeanFactory<T> {
 
@@ -11,7 +13,7 @@ public interface BeanFactory<T> {
      * @return the unique bean object of this context, or null if none
      */
     @Nullable
-    Object getBean(String name) throws BeansException;
+    Object getBean(String name) throws BeanNotFoundException;
 
     /**
      * Return the unique bean object of this application context for specified name and cast it specified class type.
@@ -20,7 +22,7 @@ public interface BeanFactory<T> {
      * @return the unique bean object of this context, or null if none
      */
     @Nullable
-    T getBean(String name, Class<T> requiredType) throws BeansException;
+    T getBean(String name, Class<T> requiredType) throws BeanNotFoundException;
 
     /**
      * Return the unique bean object of this application context for specified class type.
@@ -28,21 +30,21 @@ public interface BeanFactory<T> {
      * @return the unique bean object of this context, or null if none
      */
     @Nullable
-    T getBean(Class<T> requiredType) throws BeansException;
+    T getBean(Class<T> requiredType) throws BeanNotFoundException;
 
     /**
      * Create bean for specified bean class
      * @param beanClass specified bean class
      * @return bean for specified bean class
      */
-    T createBean(Class<T> beanClass) throws BeansException;
+    T createBean(Class<T> beanClass) throws BeanNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException;
 
     /**
      * Create bean for specified name
      * @param name bean's name
      * @return bean object for specified bean's name
      */
-    Object createBean(String name) throws BeansException;
+    Object createBean(String name) throws BeanNotFoundException;
 
     void registerBean(String name, BeanDefinition beanDefinition, Object beanInstance);
 

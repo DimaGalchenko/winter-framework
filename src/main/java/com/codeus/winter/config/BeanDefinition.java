@@ -1,17 +1,22 @@
 package com.codeus.winter.config;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
+/**
+ * A BeanDefinition describes a bean instance, which has property values,
+ * constructor argument values, and further information supplied by
+ * concrete implementations.
+ **/
 public interface BeanDefinition {
     /**
      * Scope identifier for the standard singleton scope: {@value}.
      */
-    String SCOPE_SINGLETON = "SCOPE_SINGLETON";
+    String SCOPE_SINGLETON = Scope.SINGLETON.toString();
 
     /**
      * Scope identifier for the standard prototype scope: {@value}.
      */
-    String SCOPE_PROTOTYPE = "SCOPE_PROTOTYPE";
+    String SCOPE_PROTOTYPE = Scope.PROTOTYPE.toString();
 
     /**
      * @param beanClassName Specify the bean class name of this bean definition.

@@ -1,8 +1,8 @@
 package com.codeus.winter.config;
 
-import com.codeus.winter.exception.BeansException;
+import com.codeus.winter.exception.BeanNotFoundException;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 public interface BeanPostProcessor {
     /**
@@ -15,10 +15,10 @@ public interface BeanPostProcessor {
      * @param beanName the name of the bean
      * @return the bean instance to use, either the original or a wrapped one;
      * if {@code null}, no subsequent BeanPostProcessors will be invoked
-     * @throws com.codeus.winter.exception.BeansException in case of errors
+     * @throws BeanNotFoundException in case of errors
      */
     @Nullable
-    default Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+    default Object postProcessBeforeInitialization(Object bean, String beanName) throws BeanNotFoundException {
         return bean;
     }
 
@@ -37,10 +37,10 @@ public interface BeanPostProcessor {
      * @param beanName the name of the bean
      * @return the bean instance to use, either the original or a wrapped one;
      * if {@code null}, no subsequent BeanPostProcessors will be invoked
-     * @throws com.codeus.winter.exception.BeansException in case of errors
+     * @throws BeanNotFoundException in case of errors
      */
     @Nullable
-    default Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+    default Object postProcessAfterInitialization(Object bean, String beanName) throws BeanNotFoundException {
         return bean;
     }
 }
