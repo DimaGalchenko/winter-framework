@@ -5,6 +5,7 @@ ext {
             'commons_collections': '4.4',
             'log4j': '2.23.1',
             'junit': '5.10.3',
+            'checkstyle': '10.20.0'
             'jacoco': '0.8.12'
     ]
 }
