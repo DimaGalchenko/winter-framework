@@ -1,6 +1,8 @@
 plugins {
     id 'java'
     id "org.owasp.dependencycheck" version "11.1.0"
+    id 'checkstyle'
+    id 'jacoco'
 }
 
 apply from: 'version.gradle'
@@ -10,6 +12,10 @@ version = '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
+}
+
+jacoco {
+    reportsDirectory = layout.buildDirectory.dir('customJacocoReportDir')
 }
 
 dependencies {
@@ -24,18 +30,47 @@ dependencies {
     implementation "org.apache.logging.log4j:log4j-core:${versions.log4j}"
     implementation "org.apache.logging.log4j:log4j-api:${versions.log4j}"
 
+    // Jakarta
+    implementation 'jakarta.annotation:jakarta.annotation-api:3.0.0'
+
     // JUnit Jupiter
     testImplementation platform("org.junit:junit-bom:${versions.junit}")
     testImplementation "org.junit.jupiter:junit-jupiter"
 }
 
+checkstyle {
+    toolVersion = versions.checkstyle
+}
+
+tasks.withType(Checkstyle).configureEach {
+    println "Using Checkstyle config file: ${configFile.absolutePath}"
+    configFile = file("${project.rootDir}/config/checkstyle/checkstyle.xml")
+}
+
 tasks.withType(JavaCompile).configureEach {
-    options.release = 21
+    options.release.set(21)
 }
 
 test {
     useJUnitPlatform()
+    finalizedBy jacocoTestReport // report is always generated after tests run
 }
+
+jacocoTestReport {
+    dependsOn test // tests are required to run before generating the report
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.2
+            }
+        }
+    }
+}
+
+check.dependsOn jacocoTestCoverageVerification
 
 wrapper {
     gradleVersion '8.8'
