@@ -42,7 +42,6 @@ checkstyle {
 }
 
 tasks.withType(Checkstyle).configureEach {
-    println "Using Checkstyle config file: ${configFile.absolutePath}"
     configFile = file("${project.rootDir}/config/checkstyle/checkstyle.xml")
 }
 
