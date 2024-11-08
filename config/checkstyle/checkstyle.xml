@@ -69,6 +69,7 @@
         <module name="TypeName"/>
 
         <!-- Checks for imports                              -->
+        <!-- See https://checkstyle.org/config_imports.html -->
         <module name="AvoidStarImport"/>
         <module name="IllegalImport"/> <!-- defaults to sun.* packages -->
         <module name="RedundantImport"/>
