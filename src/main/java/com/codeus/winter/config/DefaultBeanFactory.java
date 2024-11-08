@@ -91,7 +91,7 @@ public class DefaultBeanFactory implements BeanFactory<Object> {
     public Object createBean(@Nonnull final Class<Object> beanClass)
             throws NotUniqueBeanDefinitionException, InvocationTargetException, InstantiationException,
             IllegalAccessException, NoSuchMethodException {
-        checkBeanNameUniqueness(beanClass);
+        checkBeanClassUniqueness(beanClass);
 
         Object newBean = beanClass.getDeclaredConstructor().newInstance();
         singletonBeans.put(newBean.getClass().getName(), newBean);
@@ -145,7 +145,7 @@ public class DefaultBeanFactory implements BeanFactory<Object> {
         }
     }
 
-    private void checkBeanNameUniqueness(@Nonnull final Class<Object> beanClass) {
+    private void checkBeanClassUniqueness(@Nonnull final Class<Object> beanClass) {
         if (singletonBeans.values().stream().anyMatch(beanClass::isInstance)) {
             throw new NotUniqueBeanDefinitionException(
                     String.format("Bean with type '%s' already exists", beanClass.getName()));
