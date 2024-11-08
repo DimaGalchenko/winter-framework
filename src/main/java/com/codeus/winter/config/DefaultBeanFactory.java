@@ -38,11 +38,7 @@ public class DefaultBeanFactory implements BeanFactory<Object> {
     @Nullable
     @Override
     public Object getBean(@Nonnull final String name) throws BeanNotFoundException {
-        var isPresent = singletonBeans.keySet().stream()
-                .map(o -> o.equals(name))
-                .anyMatch(n -> n.equals(true));
-
-        if (isPresent) {
+        if (singletonBeans.containsKey(name)) {
             final Object bean = singletonBeans.get(name);
             postProcessors
                     .forEach(postProcessor -> postProcessor.postProcessBeforeInitialization(bean, name));
@@ -50,7 +46,7 @@ public class DefaultBeanFactory implements BeanFactory<Object> {
                     .forEach(postProcessor -> postProcessor.postProcessAfterInitialization(bean, name));
             return bean;
         } else {
-            throw new BeanNotFoundException("Bean: " + name + " not found");
+            throw new BeanNotFoundException(String.format("Bean: %s not found", name));
         }
     }
 
@@ -68,12 +64,12 @@ public class DefaultBeanFactory implements BeanFactory<Object> {
         Object bean = singletonBeans.get(name);
 
         if (bean == null) {
-            throw new BeanNotFoundException("Bean with a name '" + name + "' not found.");
+            throw new BeanNotFoundException(String.format("Bean with a name %s not found", name));
         }
 
         if (!requiredType.isAssignableFrom(bean.getClass())) {
-            throw new BeanNotFoundException("Bean with a name '" + name + "' is not compatible with the type '"
-                                            + requiredType.getName() + "'.");
+            throw new BeanNotFoundException(String.format("Bean with a name %s is not compatible with the type %s",
+                    name, requiredType.getName()));
         }
 
         return bean;
@@ -89,9 +85,10 @@ public class DefaultBeanFactory implements BeanFactory<Object> {
     public Object getBean(@Nonnull final Class<Object> requiredType) throws BeanNotFoundException {
         return singletonBeans.values().stream()
                 .filter(requiredType::isInstance)
-                .findFirst()
+                .findAny()
                 .map(requiredType::cast)
-                .orElseThrow(() -> new BeanNotFoundException("Bean not found for type: " + requiredType.getName()));
+                .orElseThrow(() -> new BeanNotFoundException(
+                        String.format("Bean not found for type: %s", requiredType.getName())));
     }
 
     /**
@@ -103,7 +100,7 @@ public class DefaultBeanFactory implements BeanFactory<Object> {
     public Object createBean(@Nonnull final Class<Object> beanClass)
             throws NotUniqueBeanDefinitionException, InvocationTargetException, InstantiationException,
             IllegalAccessException, NoSuchMethodException {
-        uniqueBeanChecking(beanClass);
+        checkBeanNameUniqueness(beanClass);
 
         Object newBean = beanClass.getDeclaredConstructor().newInstance();
         singletonBeans.put(newBean.getClass().getName(), newBean);
@@ -117,7 +114,7 @@ public class DefaultBeanFactory implements BeanFactory<Object> {
      */
     @Override
     public Object createBean(@Nonnull final String name) throws NotUniqueBeanDefinitionException {
-        uniqueBeanChecking(name);
+        checkBeanNameUniqueness(name);
 
         Object newBean = new Object();
         singletonBeans.put(name, newBean);
@@ -150,20 +147,17 @@ public class DefaultBeanFactory implements BeanFactory<Object> {
         postProcessors.add(postProcessor);
     }
 
-    private void uniqueBeanChecking(@Nonnull final String beanName) {
-        var isNotUniq = singletonBeans.keySet().stream()
-                .map(o -> o.equals(beanName))
-                .anyMatch(t -> t.equals(true));
-        if (isNotUniq) {
-            throw new NotUniqueBeanDefinitionException("Bean '" + beanName + "' already exists");
+    private void checkBeanNameUniqueness(@Nonnull final String beanName) {
+        if (singletonBeans.containsKey(beanName)) {
+            throw new NotUniqueBeanDefinitionException(
+                    String.format("Bean with name '%s' already exists", beanName));
         }
     }
 
-    private void uniqueBeanChecking(@Nonnull final Class<Object> beanClass) {
-        for (String key : singletonBeans.keySet()) {
-            if (beanClass.isInstance(singletonBeans.get(key))) {
-                throw new NotUniqueBeanDefinitionException("Bean '" + beanClass.getName() + "' already exists");
-            }
+    private void checkBeanNameUniqueness(@Nonnull final Class<Object> beanClass) {
+        if (singletonBeans.values().stream().anyMatch(beanClass::isInstance)) {
+            throw new NotUniqueBeanDefinitionException(
+                    String.format("Bean with type '%s' already exists", beanClass.getName()));
         }
     }
 }

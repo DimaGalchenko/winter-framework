@@ -165,6 +165,43 @@ class DefaultBeanFactoryTest {
     }
 
     /**
+     * Test {@link DefaultBeanFactory#createBean(String)} with not uniq {@code name}
+     * and then method throws exception {@link NotUniqueBeanDefinitionException}.
+     * <p>
+     * Method under test: {@link DefaultBeanFactory#createBean(String)}
+     */
+    @Test
+    @DisplayName("Test createBean(String) with 'name'; " +
+                 "when 'name' is not uniq bean's name; " +
+                 "then throw NotUniqueBeanDefinitionException")
+    void testCreateBeanWithNotUniqNameAndThrowsException() throws NotUniqueBeanDefinitionException {
+        beanFactory.createBean("Name");
+
+        assertThrows(NotUniqueBeanDefinitionException.class,
+                () -> beanFactory.createBean("Name"));
+    }
+
+    /**
+     * Test {@link DefaultBeanFactory#createBean(Class)} with not uniq {@code requiredType}
+     * and then method throws exception {@link NotUniqueBeanDefinitionException}.
+     * <p>
+     * Method under test: {@link DefaultBeanFactory#createBean(String)}
+     */
+    @Test
+    @DisplayName("Test createBean(Class) with 'requiredType'; " +
+                 "when class type 'requiredType' is not uniq; " +
+                 "then throw NotUniqueBeanDefinitionException")
+    void testCreateBeanWithNotUniqRequiredClassTypeAndThrowsException()
+            throws NotUniqueBeanDefinitionException, InvocationTargetException, InstantiationException,
+            IllegalAccessException, NoSuchMethodException {
+        var requiredType = Object.class;
+        beanFactory.createBean(requiredType);
+
+        assertThrows(NotUniqueBeanDefinitionException.class,
+                () -> beanFactory.createBean(requiredType));
+    }
+
+    /**
      * Test {@link DefaultBeanFactory#registerBean(String, BeanDefinition, Object)}.
      * <p>
      * Method under test:
