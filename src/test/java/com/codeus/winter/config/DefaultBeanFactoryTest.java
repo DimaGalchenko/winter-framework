@@ -11,13 +11,13 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class DefaultBeanFactoryTest {
-    /**
-     * Testing class.
-     */
     private DefaultBeanFactory beanFactory;
+    private final String TEST_BEAN_NAME = "Name";
 
     @BeforeEach
     void setUpBeforeClass() {
@@ -37,7 +37,7 @@ class DefaultBeanFactoryTest {
                  "then throw BeanNotFoundException")
     void testGetBeanWithNameWhereBeanIsMissing() throws BeanNotFoundException {
         assertThrows(BeanNotFoundException.class,
-                () -> beanFactory.getBean("Name"));
+                () -> beanFactory.getBean(TEST_BEAN_NAME));
     }
 
     /**
@@ -51,8 +51,8 @@ class DefaultBeanFactoryTest {
                  "when bean with 'name' is missing; " +
                  "then gets the bean")
     void testGetBeanWithName() throws BeanNotFoundException {
-        var expectedBean = beanFactory.createBean("Name");
-        var actual = beanFactory.getBean("Name");
+        var expectedBean = beanFactory.createBean(TEST_BEAN_NAME);
+        var actual = beanFactory.getBean(TEST_BEAN_NAME);
 
         assertEquals(expectedBean, actual);
     }
@@ -71,7 +71,7 @@ class DefaultBeanFactoryTest {
         Class<Object> requiredType = Object.class;
 
         assertThrows(BeanNotFoundException.class,
-                () -> beanFactory.getBean("Name", requiredType));
+                () -> beanFactory.getBean(TEST_BEAN_NAME, requiredType));
     }
 
     /**
@@ -84,8 +84,8 @@ class DefaultBeanFactoryTest {
     @DisplayName("Test getBean(String, Class) with 'name', 'requiredType'")
     void testGetBeanWithNameRequiredType() throws BeanNotFoundException {
         var requiredType = Object.class;
-        var expected = beanFactory.createBean("Name");
-        var actual = beanFactory.getBean("Name", requiredType);
+        var expected = beanFactory.createBean(TEST_BEAN_NAME);
+        var actual = beanFactory.getBean(TEST_BEAN_NAME, requiredType);
 
         assertEquals(expected, actual);
     }
@@ -158,10 +158,47 @@ class DefaultBeanFactoryTest {
     @Test
     @DisplayName("Test createBean(String) with 'name'")
     void testCreateBeanWithName() throws NotUniqueBeanDefinitionException {
-        var actual = beanFactory.createBean("Name");
-        var expected = beanFactory.getBean("Name");
+        var actual = beanFactory.createBean(TEST_BEAN_NAME);
+        var expected = beanFactory.getBean(TEST_BEAN_NAME);
 
         assertEquals(expected, actual);
+    }
+
+    /**
+     * Test {@link DefaultBeanFactory#createBean(String)} with not uniq {@code name}
+     * and then method throws exception {@link NotUniqueBeanDefinitionException}.
+     * <p>
+     * Method under test: {@link DefaultBeanFactory#createBean(String)}
+     */
+    @Test
+    @DisplayName("Test createBean(String) with 'name'; " +
+                 "when 'name' is not uniq bean's name; " +
+                 "then throw NotUniqueBeanDefinitionException")
+    void testCreateBeanWithNotUniqNameAndThrowsException() throws NotUniqueBeanDefinitionException {
+        beanFactory.createBean(TEST_BEAN_NAME);
+
+        assertThrows(NotUniqueBeanDefinitionException.class,
+                () -> beanFactory.createBean(TEST_BEAN_NAME));
+    }
+
+    /**
+     * Test {@link DefaultBeanFactory#createBean(Class)} with not uniq {@code requiredType}
+     * and then method throws exception {@link NotUniqueBeanDefinitionException}.
+     * <p>
+     * Method under test: {@link DefaultBeanFactory#createBean(String)}
+     */
+    @Test
+    @DisplayName("Test createBean(Class) with 'requiredType'; " +
+                 "when class type 'requiredType' is not uniq; " +
+                 "then throw NotUniqueBeanDefinitionException")
+    void testCreateBeanWithNotUniqRequiredClassTypeAndThrowsException()
+            throws NotUniqueBeanDefinitionException, InvocationTargetException, InstantiationException,
+            IllegalAccessException, NoSuchMethodException {
+        var requiredType = Object.class;
+        beanFactory.createBean(requiredType);
+
+        assertThrows(NotUniqueBeanDefinitionException.class,
+                () -> beanFactory.createBean(requiredType));
     }
 
     /**
@@ -174,7 +211,7 @@ class DefaultBeanFactoryTest {
     @DisplayName("Test registerBean(String, BeanDefinition, Object)")
     @Disabled("BeanDefinitionImp is not realized yet")
     void testRegisterBean() {
-        var beanName = "Name";
+        var beanName = TEST_BEAN_NAME;
         var beanInstance = beanFactory.createBean(beanName);
         beanFactory.registerBean(beanName, (BeanDefinition) new Object(), beanInstance);
         var expected = beanFactory.getBean(beanName, (Class<Object>) beanInstance.getClass());

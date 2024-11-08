@@ -8,14 +8,8 @@ import jakarta.annotation.Nullable;
  * concrete implementations.
  **/
 public interface BeanDefinition {
-    /**
-     * Scope identifier for the standard singleton scope: {@value}.
-     */
-    String SCOPE_SINGLETON = Scope.SINGLETON.toString();
 
-    /**
-     * Scope identifier for the standard prototype scope: {@value}.
-     */
+    String SCOPE_SINGLETON = Scope.SINGLETON.toString();
     String SCOPE_PROTOTYPE = Scope.PROTOTYPE.toString();
 
     /**
@@ -57,13 +51,13 @@ public interface BeanDefinition {
     /**
      * Set the names of the beans that this bean depends on being initialized.
      * The bean factory will guarantee that these beans get initialized first.
-     * @param dependsOn arrays of dependencies.
+     * @param dependsOn array of dependencies.
      */
     void setDependsOn(@Nullable String... dependsOn);
 
     /**
      * Return the bean names that this bean depends on.
-     * @return arrays of dependencies.
+     * @return array of dependencies.
      */
     @Nullable
     String[] getDependsOn();
