@@ -3,11 +3,22 @@ package com.codeus.winter.exception;
 import javax.annotation.Nullable;
 
 public class BeanNotFoundException extends RuntimeException {
-    public BeanNotFoundException(String message) {
+    /**
+     * Constructor with message.
+     *
+     * @param message message.
+     */
+    public BeanNotFoundException(final String message) {
         super(message);
     }
 
-    public BeanNotFoundException(@Nullable String message, @Nullable Throwable cause) {
+    /**
+     * Constructor with message and cause.
+     *
+     * @param message message.
+     * @param cause   cause.
+     */
+    public BeanNotFoundException(@Nullable final String message, @Nullable final Throwable cause) {
         super(message, cause);
     }
 }
