@@ -14,7 +14,7 @@ import java.util.Map;
 /**
  * Default implementation of the {@link BeanFactory} interface.
  */
-public class DefaultBeanFactory implements BeanFactory<Object> {
+public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry {
 
     private final Map<String, Object> singletonBeans = new HashMap<>();
     private final Map<String, BeanDefinition> beanDefinitions = new HashMap<>();
@@ -50,8 +50,8 @@ public class DefaultBeanFactory implements BeanFactory<Object> {
      */
     @Nullable
     @Override
-    public Object getBean(@Nonnull final String name,
-                          @Nonnull final Class<Object> requiredType) throws BeanNotFoundException {
+    public <T> T getBean(@Nonnull final String name,
+                         @Nonnull final Class<T> requiredType) throws BeanNotFoundException {
         Object bean = singletonBeans.get(name);
 
         if (bean == null) {
@@ -63,17 +63,18 @@ public class DefaultBeanFactory implements BeanFactory<Object> {
                     name, requiredType.getName()));
         }
 
-        return bean;
+        return requiredType.cast(bean);
     }
 
     /**
      * Request beans from the storage with specified parameters.
+     *
      * @param requiredType required class type
      * @return bean object if its exist or else throw exception.
      */
     @Nullable
     @Override
-    public Object getBean(@Nonnull final Class<Object> requiredType) throws BeanNotFoundException {
+    public <T> T getBean(@Nonnull final Class<T> requiredType) throws BeanNotFoundException {
         return singletonBeans.values().stream()
                 .filter(requiredType::isInstance)
                 .findAny()
@@ -84,22 +85,24 @@ public class DefaultBeanFactory implements BeanFactory<Object> {
 
     /**
      * Creating bean object with class type.
+     *
      * @param beanClass specified bean class.
      * @return bean object if its not possible throw exception.
      */
     @Override
-    public Object createBean(@Nonnull final Class<Object> beanClass)
+    public <T> T createBean(@Nonnull final Class<T> beanClass)
             throws NotUniqueBeanDefinitionException, InvocationTargetException, InstantiationException,
             IllegalAccessException, NoSuchMethodException {
         checkBeanClassUniqueness(beanClass);
 
         Object newBean = beanClass.getDeclaredConstructor().newInstance();
         singletonBeans.put(newBean.getClass().getName(), newBean);
-        return newBean;
+        return beanClass.cast(newBean);
     }
 
     /**
      * Creating bean object with name.
+     *
      * @param name bean's name
      * @return bean object if its not possible throw exception.
      */
@@ -114,9 +117,10 @@ public class DefaultBeanFactory implements BeanFactory<Object> {
 
     /**
      * Register bean in the bean's storage.
-     * @param name bean's name.
+     *
+     * @param name           bean's name.
      * @param beanDefinition bean's BeanDefinition.
-     * @param beanInstance bean's instance.
+     * @param beanInstance   bean's instance.
      */
     @Override
     public void registerBean(@Nonnull final String name,
@@ -145,10 +149,40 @@ public class DefaultBeanFactory implements BeanFactory<Object> {
         }
     }
 
-    private void checkBeanClassUniqueness(@Nonnull final Class<Object> beanClass) {
+    private <T> void checkBeanClassUniqueness(@Nonnull final Class<T> beanClass) {
         if (singletonBeans.values().stream().anyMatch(beanClass::isInstance)) {
             throw new NotUniqueBeanDefinitionException(
                     String.format("Bean with type '%s' already exists", beanClass.getName()));
         }
+    }
+
+    @Override
+    public void registerBeanDefinition(String beanName, BeanDefinition beanDefinition) {
+
+    }
+
+    @Override
+    public void removeBeanDefinition(String beanName) {
+
+    }
+
+    @Override
+    public BeanDefinition getBeanDefinition(String beanName) {
+        return null;
+    }
+
+    @Override
+    public boolean containsBeanDefinition(String beanName) {
+        return false;
+    }
+
+    @Override
+    public String[] getBeanDefinitionNames() {
+        return new String[0];
+    }
+
+    @Override
+    public int getBeanDefinitionCount() {
+        return 0;
     }
 }

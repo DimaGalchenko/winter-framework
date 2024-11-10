@@ -1,20 +1,35 @@
 package com.codeus.winter.context;
 
-import com.codeus.winter.config.BeanFactory;
+import org.springframework.lang.Nullable;
 
-
-public interface ApplicationContext<T> extends BeanFactory<T> {
-
-    /**
-     * Register bean at ApplicationContext.
-     * @param name bean's name
-     * @param bean bean's object
-     */
-    void registerBean(String name, Object bean);
+public interface ApplicationContext {
 
     /**
-     * Up-to-date application context.
+     * Return the unique id of this application context.
+     *
+     * @return the unique id of the context, or {@code null} if none
      */
-    void refresh();
+    @Nullable
+    String getId();
 
+    /**
+     * Return a name for the deployed application that this context belongs to.
+     *
+     * @return a name for the deployed application, or the empty String by default
+     */
+    String getApplicationName();
+
+    /**
+     * Return a friendly name for this context.
+     *
+     * @return a display name for this context (never {@code null})
+     */
+    String getDisplayName();
+
+    /**
+     * Return the timestamp when this context was first loaded.
+     *
+     * @return the timestamp (ms) when this context was first loaded
+     */
+    long getStartupDate();
 }
