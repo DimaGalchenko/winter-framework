@@ -1,6 +1,6 @@
 package com.codeus.winter.context;
 
-import org.springframework.lang.Nullable;
+import javax.annotation.Nullable;
 
 public interface ApplicationContext {
 
