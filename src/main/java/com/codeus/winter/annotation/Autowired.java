@@ -11,6 +11,6 @@ import java.lang.annotation.Target;
  * automatically injected by the framework’s dependency injection container.
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD, ElementType.CONSTRUCTOR})
+@Target({ElementType.METHOD, ElementType.FIELD, ElementType.CONSTRUCTOR})
 public @interface Autowired {
 }
