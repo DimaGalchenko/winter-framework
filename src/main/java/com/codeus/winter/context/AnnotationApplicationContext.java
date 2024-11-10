@@ -1,10 +1,13 @@
 package com.codeus.winter.context;
 
-import com.codeus.winter.config.*;
+import com.codeus.winter.config.BeanDefinition;
+import com.codeus.winter.config.BeanFactory;
+import com.codeus.winter.config.BeanPostProcessor;
+import com.codeus.winter.config.ClassPathBeanDefinitionScanner;
+import com.codeus.winter.config.DefaultBeanFactory;
 import com.codeus.winter.exception.BeanNotFoundException;
 import jakarta.annotation.Nullable;
-import org.springframework.util.Assert;
-import org.springframework.util.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -44,7 +47,6 @@ public class AnnotationApplicationContext implements ApplicationContext, BeanFac
      * <p>Default is the object id of the context instance.
      */
     public void setDisplayName(String displayName) {
-        Assert.hasLength(displayName, "Display name must not be empty");
         this.displayName = displayName;
     }
 
