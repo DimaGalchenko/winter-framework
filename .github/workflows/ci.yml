@@ -3,10 +3,10 @@ name: Build, Test, and Analyze
 on:
   push:
     branches:
-      - main
+      - develop
   pull_request:
     branches:
-      - main
+      - develop
 
 jobs:
   build-and-analyze:
