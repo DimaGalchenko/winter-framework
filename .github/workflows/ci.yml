@@ -53,4 +53,4 @@ jobs:
       - name: SonarCloud Scan
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew sonarqube -Dsonar.login=$SONAR_TOKEN
+        run: ./gradlew sonar -Dsonar.token=$SONAR_TOKEN
