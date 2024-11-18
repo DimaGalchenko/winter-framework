@@ -41,6 +41,8 @@ jobs:
       - name: Run Dependency Check
         timeout-minutes: 10
         continue-on-error: true
+        env:
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
         run: ./gradlew dependencyCheckAnalyze
 
       # Step 6: Run tests and generate JaCoCo coverage report
