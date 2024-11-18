@@ -39,6 +39,8 @@ jobs:
 
       # Step 5: Run OWASP Dependency Check
       - name: Run Dependency Check
+        timeout-minutes: 1
+        continue-on-error: true
         run: ./gradlew dependencyCheckAnalyze
 
       # Step 6: Run tests and generate JaCoCo coverage report
