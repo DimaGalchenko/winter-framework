@@ -28,7 +28,7 @@ public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry {
      */
     @Nullable
     @Override
-    public Object getBean(@Nonnull final String name) throws BeanNotFoundException {
+    public final Object getBean(@Nonnull final String name) throws BeanNotFoundException {
         if (singletonBeans.containsKey(name)) {
             final Object bean = singletonBeans.get(name);
             postProcessors
@@ -50,7 +50,7 @@ public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry {
      */
     @Nullable
     @Override
-    public <T> T getBean(@Nonnull final String name,
+    public final <T> T getBean(@Nonnull final String name,
                          @Nonnull final Class<T> requiredType) throws BeanNotFoundException {
         Object bean = singletonBeans.get(name);
 
@@ -74,7 +74,7 @@ public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry {
      */
     @Nullable
     @Override
-    public <T> T getBean(@Nonnull final Class<T> requiredType) throws BeanNotFoundException {
+    public final <T> T getBean(@Nonnull final Class<T> requiredType) throws BeanNotFoundException {
         return singletonBeans.values().stream()
                 .filter(requiredType::isInstance)
                 .findAny()
@@ -90,7 +90,7 @@ public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry {
      * @return bean object if its not possible throw exception.
      */
     @Override
-    public <T> T createBean(@Nonnull final Class<T> beanClass)
+    public final <T> T createBean(@Nonnull final Class<T> beanClass)
             throws NotUniqueBeanDefinitionException, InvocationTargetException, InstantiationException,
             IllegalAccessException, NoSuchMethodException {
         checkBeanClassUniqueness(beanClass);
@@ -107,7 +107,7 @@ public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry {
      * @return bean object if its not possible throw exception.
      */
     @Override
-    public Object createBean(@Nonnull final String name) throws NotUniqueBeanDefinitionException {
+    public final Object createBean(@Nonnull final String name) throws NotUniqueBeanDefinitionException {
         checkBeanNameUniqueness(name);
 
         Object newBean = new Object();
@@ -123,7 +123,7 @@ public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry {
      * @param beanInstance   bean's instance.
      */
     @Override
-    public void registerBean(@Nonnull final String name,
+    public final void registerBean(@Nonnull final String name,
                              @Nonnull final BeanDefinition beanDefinition,
                              @Nonnull final Object beanInstance) {
         if (beanDefinition.isSingleton()) {
@@ -138,7 +138,7 @@ public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry {
      * @param postProcessor BeanPostProcessor.
      */
     @Override
-    public void addBeanPostProcessor(@Nonnull final BeanPostProcessor postProcessor) {
+    public final void addBeanPostProcessor(@Nonnull final BeanPostProcessor postProcessor) {
         postProcessors.add(postProcessor);
     }
 
@@ -157,32 +157,32 @@ public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry {
     }
 
     @Override
-    public void registerBeanDefinition(String beanName, BeanDefinition beanDefinition) {
+    public final void registerBeanDefinition(String beanName, BeanDefinition beanDefinition) {
 
     }
 
     @Override
-    public void removeBeanDefinition(String beanName) {
+    public final void removeBeanDefinition(String beanName) {
 
     }
 
     @Override
-    public BeanDefinition getBeanDefinition(String beanName) {
+    public final BeanDefinition getBeanDefinition(String beanName) {
         return null;
     }
 
     @Override
-    public boolean containsBeanDefinition(String beanName) {
+    public final boolean containsBeanDefinition(String beanName) {
         return false;
     }
 
     @Override
-    public String[] getBeanDefinitionNames() {
+    public final String[] getBeanDefinitionNames() {
         return new String[0];
     }
 
     @Override
-    public int getBeanDefinitionCount() {
+    public final int getBeanDefinitionCount() {
         return 0;
     }
 }
