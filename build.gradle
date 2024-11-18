@@ -82,6 +82,9 @@ wrapper {
 
 dependencyCheck {
     suppressionFile = '${project.rootDir}/dependency-check-suppressions.xml'
+    nvd {
+        apiKey = System.getenv("NVD_API_KEY") ?: "INVALID_NVD_API_KEY"
+    }
 }
 
 sonarqube {

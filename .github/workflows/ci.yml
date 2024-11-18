@@ -39,7 +39,7 @@ jobs:
 
       # Step 5: Run OWASP Dependency Check
       - name: Run Dependency Check
-        timeout-minutes: 1
+        timeout-minutes: 10
         continue-on-error: true
         run: ./gradlew dependencyCheckAnalyze
 
