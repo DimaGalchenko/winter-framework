@@ -29,7 +29,7 @@ public class WinterBeanDefinitionRegistry implements BeanDefinitionRegistry {
     public void registerBeanDefinition(String beanName, BeanDefinition beanDefinition) {
         if (beanDefinitionMap.containsKey(beanName)) {
             throw new NotUniqueBeanDefinitionException(
-                    String.format("Bean with name %s is already registered",beanName));
+                    String.format("Bean with name %s is already registered", beanName));
         }
         beanDefinitionMap.put(beanName, beanDefinition);
     }
@@ -43,7 +43,7 @@ public class WinterBeanDefinitionRegistry implements BeanDefinitionRegistry {
     @Override
     public void removeBeanDefinition(String beanName) {
         if (!beanDefinitionMap.containsKey(beanName)) {
-            throw new BeanNotFoundException(String.format("No bean definition found for name %s",beanName));
+            throw new BeanNotFoundException(String.format("No bean definition found for name %s", beanName));
         }
         beanDefinitionMap.remove(beanName);
     }
@@ -58,7 +58,7 @@ public class WinterBeanDefinitionRegistry implements BeanDefinitionRegistry {
     @Override
     public BeanDefinition getBeanDefinition(String beanName) {
         if (!beanDefinitionMap.containsKey(beanName)) {
-            throw new BeanNotFoundException(String.format("No bean definition found for name %s",beanName));
+            throw new BeanNotFoundException(String.format("No bean definition found for name %s", beanName));
         }
         return beanDefinitionMap.get(beanName);
     }

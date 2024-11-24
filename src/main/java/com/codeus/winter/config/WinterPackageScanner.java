@@ -11,7 +11,8 @@ import java.util.Set;
 public class WinterPackageScanner implements PackageScanner {
 
     @Override
-    public final Set<Class<?>> findClassesWithAnnotations(String packageName, Set <Class<? extends Annotation>> annotations) {
+    public final Set<Class<?>> findClassesWithAnnotations(String packageName,
+                                                          Set<Class<? extends Annotation>> annotations) {
         Set<Class<?>> annotatedClasses = new HashSet<>();
 
         Reflections reflections = new Reflections(
