@@ -54,7 +54,7 @@ public class AutowiredAnnotationBeanPostProcessor implements BeanPostProcessor {
         for (Method method : beanType.getDeclaredMethods()) {
             if (method.isAnnotationPresent(Autowired.class)) {
                 for (Parameter parameter : method.getParameters()) {
-                    Object dependency = beanFactory.getBean(parameter.getName());
+                    Object dependency = beanFactory.getBean(parameter.getType());
                     method.setAccessible(true);
                     method.invoke(bean, dependency);
                 }
@@ -78,9 +78,9 @@ public class AutowiredAnnotationBeanPostProcessor implements BeanPostProcessor {
         for (Constructor constructor : beanType.getConstructors()) {
             if (constructor.isAnnotationPresent(Autowired.class)) {
                 for (Parameter parameter : constructor.getParameters()) {
-                    String name = parameter.getName();
-                    Object dependency = beanFactory.getBean(name);
-                    Field field = getFieldByName(beanType.getDeclaredFields(), name);
+                    Class<?> type = parameter.getType();
+                    Object dependency = beanFactory.getBean(type);
+                    Field field = getFieldByType(beanType.getDeclaredFields(), type);
                     field.setAccessible(true);
                     field.set(bean, dependency);
                 }
@@ -88,13 +88,13 @@ public class AutowiredAnnotationBeanPostProcessor implements BeanPostProcessor {
         }
     }
 
-    private Field getFieldByName(Field[] declaredFields, String name) {
+    private Field getFieldByType(Field[] declaredFields, Class<?> type) {
         Field field = null;
         for (Field declaredField : declaredFields) {
-            if (declaredField.getName().equals(name)) {
+            if (declaredField.getType().equals(type)) {
                 field = declaredField;
             } else {
-                throw new IllegalArgumentException(String.format("Field '%s' not found", name));
+                throw new IllegalArgumentException(String.format("Field '%s' not found", type));
             }
         }
         return field;
