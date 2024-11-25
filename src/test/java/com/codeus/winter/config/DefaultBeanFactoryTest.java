@@ -24,13 +24,6 @@ class DefaultBeanFactoryTest {
         beanFactory = new DefaultBeanFactory();
     }
 
-    /**
-     * Test {@link DefaultBeanFactory#getBean(String)} with {@code name}
-     * where bean with 'name' is missing.
-     * Method throws BeanNotFoundException.
-     * <p>
-     * Method under test: {@link DefaultBeanFactory#getBean(String)}
-     */
     @Test
     @DisplayName("Test getBean(String) with 'name'; " +
                  "when bean with 'name' is missing; " +
@@ -40,12 +33,6 @@ class DefaultBeanFactoryTest {
                 () -> beanFactory.getBean(TEST_BEAN_NAME));
     }
 
-    /**
-     * Test {@link DefaultBeanFactory#getBean(String)} with {@code name}
-     * where bean with 'name' is present.
-     * <p>
-     * Method under test: {@link DefaultBeanFactory#getBean(String)}
-     */
     @Test
     @DisplayName("Test getBean(String) with 'name'; " +
                  "when bean with 'name' is missing; " +
@@ -57,12 +44,6 @@ class DefaultBeanFactoryTest {
         assertEquals(expectedBean, actual);
     }
 
-    /**
-     * Test {@link DefaultBeanFactory#getBean(String, Class)} with {@code name},
-     * {@code requiredType} where bean with class type of 'requiredType' is missing.
-     * <p>
-     * Method under test: {@link DefaultBeanFactory#getBean(String, Class)}
-     */
     @Test
     @DisplayName("Test getBean(String, Class) with 'name', 'requiredType'; " +
                  "when bean with class type of 'requiredType' is missing; " +
@@ -74,12 +55,6 @@ class DefaultBeanFactoryTest {
                 () -> beanFactory.getBean(TEST_BEAN_NAME, requiredType));
     }
 
-    /**
-     * Test {@link DefaultBeanFactory#getBean(String, Class)} with {@code name},
-     * {@code requiredType}.
-     * <p>
-     * Method under test: {@link DefaultBeanFactory#getBean(String, Class)}
-     */
     @Test
     @DisplayName("Test getBean(String, Class) with 'name', 'requiredType'")
     void testGetBeanWithNameRequiredType() throws BeanNotFoundException {
@@ -90,16 +65,6 @@ class DefaultBeanFactoryTest {
         assertEquals(expected, actual);
     }
 
-    /**
-     * Test {@link DefaultBeanFactory#getBean(Class)} with {@code requiredType}
-     * where bean with class type of {@code requiredType} is missing.
-     * <ul>
-     *   <li>When {@code java.lang.Object}.</li>
-     *   <li>Then throw {@link BeanNotFoundException}.</li>
-     * </ul>
-     * <p>
-     * Method under test: {@link DefaultBeanFactory#getBean(Class)}
-     */
     @Test
     @DisplayName("Test getBean(Class) with 'requiredType'; " +
                  "when 'java.lang.Object'; " +
@@ -110,15 +75,6 @@ class DefaultBeanFactoryTest {
         assertThrows(BeanNotFoundException.class, () -> beanFactory.getBean(requiredType));
     }
 
-    /**
-     * Test {@link DefaultBeanFactory#getBean(Class)} with {@code requiredType}.
-     * <ul>
-     *   <li>When {@code java.lang.Object}.</li>
-     *   <li>Then throw {@link BeanNotFoundException}.</li>
-     * </ul>
-     * <p>
-     * Method under test: {@link DefaultBeanFactory#getBean(Class)}
-     */
     @Test
     @DisplayName("Test getBean(Class) with 'requiredType'")
     void testGetBeanWithRequiredType() throws BeanNotFoundException, InvocationTargetException,
@@ -130,14 +86,6 @@ class DefaultBeanFactoryTest {
         assertEquals(expected, actual);
     }
 
-    /**
-     * Test {@link DefaultBeanFactory#createBean(Class)} with {@code beanClass}.
-     * <ul>
-     *   <li>When {@code java.lang.Object}.</li>
-     * </ul>
-     * <p>
-     * Method under test: {@link DefaultBeanFactory#createBean(Class)}
-     */
     @Test
     @DisplayName("Test createBean(Class) with 'beanClass'; when 'java.lang.Object'")
     void testCreateBeanWithBeanClassWhenJavaLangObject() throws NotUniqueBeanDefinitionException,
@@ -150,11 +98,6 @@ class DefaultBeanFactoryTest {
         assertEquals(expected, actual);
     }
 
-    /**
-     * Test {@link DefaultBeanFactory#createBean(String)} with {@code name}.
-     * <p>
-     * Method under test: {@link DefaultBeanFactory#createBean(String)}
-     */
     @Test
     @DisplayName("Test createBean(String) with 'name'")
     void testCreateBeanWithName() throws NotUniqueBeanDefinitionException {
@@ -164,12 +107,6 @@ class DefaultBeanFactoryTest {
         assertEquals(expected, actual);
     }
 
-    /**
-     * Test {@link DefaultBeanFactory#createBean(String)} with not uniq {@code name}
-     * and then method throws exception {@link NotUniqueBeanDefinitionException}.
-     * <p>
-     * Method under test: {@link DefaultBeanFactory#createBean(String)}
-     */
     @Test
     @DisplayName("Test createBean(String) with 'name'; " +
                  "when 'name' is not uniq bean's name; " +
@@ -181,12 +118,6 @@ class DefaultBeanFactoryTest {
                 () -> beanFactory.createBean(TEST_BEAN_NAME));
     }
 
-    /**
-     * Test {@link DefaultBeanFactory#createBean(Class)} with not uniq {@code requiredType}
-     * and then method throws exception {@link NotUniqueBeanDefinitionException}.
-     * <p>
-     * Method under test: {@link DefaultBeanFactory#createBean(String)}
-     */
     @Test
     @DisplayName("Test createBean(Class) with 'requiredType'; " +
                  "when class type 'requiredType' is not uniq; " +
@@ -201,12 +132,6 @@ class DefaultBeanFactoryTest {
                 () -> beanFactory.createBean(requiredType));
     }
 
-    /**
-     * Test {@link DefaultBeanFactory#registerBean(String, BeanDefinition, Object)}.
-     * <p>
-     * Method under test:
-     * {@link DefaultBeanFactory#registerBean(String, BeanDefinition, Object)}
-     */
     @Test
     @DisplayName("Test registerBean(String, BeanDefinition, Object)")
     @Disabled("BeanDefinitionImp is not realized yet")
@@ -219,12 +144,6 @@ class DefaultBeanFactoryTest {
         assertEquals(expected, beanInstance);
     }
 
-    /**
-     * Test {@link DefaultBeanFactory#addBeanPostProcessor(BeanPostProcessor)}.
-     * <p>
-     * Method under test:
-     * {@link DefaultBeanFactory#addBeanPostProcessor(BeanPostProcessor)}
-     */
     @Test
     @DisplayName("Test addBeanPostProcessor(BeanPostProcessor)")
     @Disabled("BeanPostProcessorImp is not realized yet")

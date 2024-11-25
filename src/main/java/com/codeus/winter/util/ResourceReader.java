@@ -2,11 +2,6 @@ package com.codeus.winter.util;
 
 import java.util.List;
 
-/**
- * Common operation for resource reader.
- *
- * @param <T> type of resource.
- */
 public interface ResourceReader<T> {
 
     /**

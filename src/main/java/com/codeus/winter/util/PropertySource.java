@@ -18,7 +18,7 @@ public abstract class PropertySource<T> {
     }
 
     private void hasText(String string) {
-        if (string == null || string.isEmpty()) {
+        if (string == null || string.isBlank()) {
             throw new NullPointerException("Property source name must contain at least one character");
         }
     }
