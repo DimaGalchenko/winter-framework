@@ -13,4 +13,8 @@ public class AutowiredMethodTestClass {
     public void setField(DependencyTestClass field) {
         this.field = field;
     }
+
+    public DependencyTestClass getField() {
+        return field;
+    }
 }

@@ -12,4 +12,12 @@ public class AutowiredConstructorTestClass {
     public AutowiredConstructorTestClass(DependencyTestClass field) {
         this.field = field;
     }
+
+    public DependencyTestClass getField() {
+        return field;
+    }
+
+    public void setField(DependencyTestClass field) {
+        this.field = field;
+    }
 }

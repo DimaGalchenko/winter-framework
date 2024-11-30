@@ -15,6 +15,7 @@ import java.lang.reflect.Parameter;
  * BeanPostProcessor implementation that autowires annotated fields, setter methods, and constructor.
  *
  */
+@SuppressWarnings("java:S3011")
 public class AutowiredAnnotationBeanPostProcessor implements BeanPostProcessor {
 
     private BeanFactory beanFactory;

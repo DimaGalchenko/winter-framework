@@ -9,7 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.reflections.Reflections;
 
-public class AutowiredAnnotationBeanPostProcessorTest {
+class AutowiredAnnotationBeanPostProcessorTest {
 
     private static final String AUTOWIRED_FIELD_BEAN_NAME = "AutowiredFieldTestClass";
     private static final String AUTOWIRED_CONSTRUCTOR_BEAN_NAME = "AutowiredConstructorTestClass";

@@ -15,4 +15,11 @@ public class InitDestroyTestClass {
         field = "destroy";
     }
 
+    public String getField() {
+        return field;
+    }
+
+    public void setField(String field) {
+        this.field = field;
+    }
 }

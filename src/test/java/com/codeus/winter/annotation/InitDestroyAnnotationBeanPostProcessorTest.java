@@ -9,7 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.reflections.Reflections;
 
-public class InitDestroyAnnotationBeanPostProcessorTest {
+class InitDestroyAnnotationBeanPostProcessorTest {
 
     private static final String INIT_DESTROY_BEAN_NAME = "InitDestroyTestClass";
     private DefaultBeanFactory beanFactory;

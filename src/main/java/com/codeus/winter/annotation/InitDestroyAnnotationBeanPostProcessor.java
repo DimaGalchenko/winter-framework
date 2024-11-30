@@ -11,6 +11,7 @@ import java.lang.reflect.Method;
  * BeanPostProcessor implementation that invokes annotated init and destroy methods. Processes
  * methods that annotated with @PostConstruct and @PreDestroy classes
  */
+@SuppressWarnings("java:S3011")
 public class InitDestroyAnnotationBeanPostProcessor implements BeanPostProcessor,
     DestructionBeanPostProcessor {
 
