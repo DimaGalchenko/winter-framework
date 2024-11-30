@@ -8,6 +8,6 @@ public class AutowiredFieldTestClass {
 
 
     public AutowiredFieldTestClass() {
-
+        // default constructor
     }
 }

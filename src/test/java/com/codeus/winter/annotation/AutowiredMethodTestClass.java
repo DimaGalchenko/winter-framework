@@ -6,6 +6,7 @@ public class AutowiredMethodTestClass {
     private DependencyTestClass field;
 
     public AutowiredMethodTestClass() {
+        // default constructor
     }
 
     @Autowired
