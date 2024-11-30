@@ -5,8 +5,8 @@ public class DependencyTestClass {
 
     private String dependency;
 
-    public DependencyTestClass(String dependency) {
-        this.dependency = dependency;
+    public DependencyTestClass() {
+        // default constructor
     }
 
     public String getDependency() {
