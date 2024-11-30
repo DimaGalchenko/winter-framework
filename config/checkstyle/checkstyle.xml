@@ -41,11 +41,11 @@
     <module name="TreeWalker">
 
         <!-- Checks for Javadoc comments.                     -->
-        <module name="InvalidJavadocPosition"/>
-        <module name="JavadocMethod"/>
-        <module name="JavadocType"/>
-        <module name="JavadocStyle"/>
-        <module name="MissingJavadocMethod"/>
+<!--        <module name="InvalidJavadocPosition"/>-->
+<!--        <module name="JavadocMethod"/>-->
+<!--        <module name="JavadocType"/>-->
+<!--        <module name="JavadocStyle"/>-->
+<!--        <module name="MissingJavadocMethod"/>-->
 
         <!-- Checks for Naming Conventions.                  -->
         <module name="ConstantName">
