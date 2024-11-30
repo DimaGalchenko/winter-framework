@@ -81,8 +81,10 @@ public class AutowiredAnnotationBeanPostProcessor implements BeanPostProcessor {
                     Class<?> type = parameter.getType();
                     Object dependency = beanFactory.getBean(type);
                     Field field = getFieldByType(beanType.getDeclaredFields(), type);
-                    field.setAccessible(true);
-                    field.set(bean, dependency);
+                    if (field != null) {
+                        field.setAccessible(true);
+                        field.set(bean, dependency);
+                    }
                 }
             }
         }
