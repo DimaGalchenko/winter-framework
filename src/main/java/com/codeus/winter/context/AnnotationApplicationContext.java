@@ -1,10 +1,12 @@
 package com.codeus.winter.context;
 
 import com.codeus.winter.config.BeanDefinition;
+import com.codeus.winter.config.BeanDefinitionRegistry;
 import com.codeus.winter.config.BeanFactory;
 import com.codeus.winter.config.BeanPostProcessor;
 import com.codeus.winter.config.ClassPathBeanDefinitionScanner;
 import com.codeus.winter.config.DefaultBeanFactory;
+import com.codeus.winter.config.impl.BeanDefinitionRegistryImpl;
 import com.codeus.winter.exception.BeanNotFoundException;
 import jakarta.annotation.Nullable;
 import org.apache.commons.lang3.ObjectUtils;
@@ -24,6 +26,7 @@ public class AnnotationApplicationContext implements ApplicationContext, BeanFac
     private String displayName = ObjectUtils.identityToString(this);
     private final ClassPathBeanDefinitionScanner scanner;
     private final DefaultBeanFactory beanFactory;
+    private final BeanDefinitionRegistry beanDefinitionRegistry;
 
     /**
      * Constructs a new {@code AnnotationApplicationContext} for the specified base packages.
@@ -31,8 +34,9 @@ public class AnnotationApplicationContext implements ApplicationContext, BeanFac
      * @param basePackages the base packages to scan for component classes
      */
     public AnnotationApplicationContext(String... basePackages) {
+        this.beanDefinitionRegistry = new BeanDefinitionRegistryImpl();
         beanFactory = new DefaultBeanFactory();
-        this.scanner = new ClassPathBeanDefinitionScanner(beanFactory);
+        this.scanner = new ClassPathBeanDefinitionScanner(beanDefinitionRegistry);
         scanner.scanPackages(basePackages);
     }
 
