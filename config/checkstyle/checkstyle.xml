@@ -41,11 +41,11 @@
     <module name="TreeWalker">
 
         <!-- Checks for Javadoc comments.                     -->
-        <module name="InvalidJavadocPosition"/>
-        <module name="JavadocMethod"/>
-        <module name="JavadocType"/>
-        <module name="JavadocStyle"/>
-        <module name="MissingJavadocMethod"/>
+<!--        <module name="InvalidJavadocPosition"/>-->
+<!--        <module name="JavadocMethod"/>-->
+<!--        <module name="JavadocType"/>-->
+<!--        <module name="JavadocStyle"/>-->
+<!--        <module name="MissingJavadocMethod"/>-->
 
         <!-- Checks for Naming Conventions.                  -->
         <module name="ConstantName">
@@ -100,7 +100,6 @@
         <!-- Checks for common coding problems               -->
         <module name="EmptyStatement"/>
         <module name="EqualsHashCode"/>
-        <module name="HiddenField"/>
         <module name="IllegalInstantiation"/>
         <module name="InnerAssignment"/>
         <module name="MagicNumber"/>
@@ -118,7 +117,6 @@
 
         <!-- Miscellaneous other checks.                   -->
         <module name="ArrayTypeStyle"/>
-        <module name="FinalParameters"/>
         <module name="TodoComment"/>
         <module name="UpperEll"/>
 

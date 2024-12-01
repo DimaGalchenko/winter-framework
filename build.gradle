@@ -1,8 +1,9 @@
 plugins {
     id 'java'
-    id "org.owasp.dependencycheck" version "11.1.0"
+    id 'org.owasp.dependencycheck' version '11.1.0'
     id 'checkstyle'
     id 'jacoco'
+    id 'org.sonarqube' version '5.1.0.4882'
 }
 
 apply from: 'version.gradle'
@@ -57,6 +58,10 @@ test {
 
 jacocoTestReport {
     dependsOn test // tests are required to run before generating the report
+    reports {
+        xml.required = true
+        html.required = true
+    }
 }
 
 jacocoTestCoverageVerification {
@@ -76,5 +81,16 @@ wrapper {
 }
 
 dependencyCheck {
-    suppressionFile = "${project.rootDir}/dependency-check-suppressions.xml"
+    suppressionFile = '${project.rootDir}/dependency-check-suppressions.xml'
+    nvd {
+        apiKey = System.getenv("NVD_API_KEY") ?: "INVALID_NVD_API_KEY"
+    }
+}
+
+sonarqube {
+    properties {
+        property 'sonar.projectKey', 'DimaGalchenko_winter-framework'
+        property 'sonar.organization', 'dimagalchenko'
+        property 'sonar.host.url', 'https://sonarcloud.io'
+    }
 }

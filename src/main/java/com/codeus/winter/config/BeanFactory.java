@@ -17,43 +17,47 @@ public interface BeanFactory {
     Object getBean(String name) throws BeanNotFoundException;
 
     /**
-     * Return the unique bean object of this application context for specified name and cast it specified class type.
+     * Return the unique bean object of this application context for specified name
+     * and cast it to the specified class type.
      *
      * @param name         bean name
      * @param requiredType required class type
+     * @param <T>          the type of the bean
      * @return the unique bean object of this context, or null if none
      */
     @Nullable
     <T> T getBean(String name, Class<T> requiredType) throws BeanNotFoundException;
 
     /**
-     * Return the unique bean object of this application context for specified class type.
+     * Return the unique bean object of this application context for the specified class type.
      *
      * @param requiredType required class type
+     * @param <T>          the type of the bean
      * @return the unique bean object of this context, or null if none
      */
     @Nullable
     <T> T getBean(Class<T> requiredType) throws BeanNotFoundException;
 
     /**
-     * Create bean for specified bean class.
+     * Create a bean for the specified bean class.
      *
      * @param beanClass specified bean class.
-     * @return bean for specified bean class.
+     * @param <T>       the type of the bean
+     * @return the bean for the specified bean class.
      */
     <T> T createBean(Class<T> beanClass) throws BeanNotFoundException, NoSuchMethodException,
             InvocationTargetException, InstantiationException, IllegalAccessException;
 
     /**
-     * Create bean for specified name.
+     * Create a bean for the specified name.
      *
      * @param name bean's name
-     * @return bean object for specified bean's name
+     * @return the bean object for the specified bean's name
      */
     Object createBean(String name) throws BeanNotFoundException;
 
     /**
-     * Register bean for its name, BeanDefinition and instance.
+     * Register a bean for its name, BeanDefinition, and instance.
      *
      * @param name           bean's name.
      * @param beanDefinition bean's BeanDefinition.
@@ -62,7 +66,7 @@ public interface BeanFactory {
     void registerBean(String name, BeanDefinition beanDefinition, Object beanInstance);
 
     /**
-     * Adding BeanPostProcessor.
+     * Add a BeanPostProcessor.
      *
      * @param postProcessor BeanPostProcessor
      */
