@@ -11,7 +11,7 @@ public class BeanDefinitionRegistryImpl implements BeanDefinitionRegistry {
     private final Map<String, BeanDefinition> beanDefinitionMap = new HashMap<>();
 
     @Override
-    public void registerBeanDefinition(String beanName, BeanDefinition beanDefinition) {
+    public final void registerBeanDefinition(String beanName, BeanDefinition beanDefinition) {
         if (beanDefinitionMap.containsKey(beanName)) {
             throw new BeanDefinitionStoreException(String.format("Cannot register bean definition with name '%s' " +
                     "another bean with the same name already exists and overriding is not allowed.", beanName));
@@ -20,7 +20,7 @@ public class BeanDefinitionRegistryImpl implements BeanDefinitionRegistry {
     }
 
     @Override
-    public void removeBeanDefinition(String beanName) {
+    public final void removeBeanDefinition(String beanName) {
         if (!beanDefinitionMap.containsKey(beanName)) {
             throw new BeanDefinitionStoreException( String.format("No bean definition found for name '%s'", beanName));
         }
@@ -28,22 +28,24 @@ public class BeanDefinitionRegistryImpl implements BeanDefinitionRegistry {
     }
 
     @Override
-    public BeanDefinition getBeanDefinition(String beanName) {
+    public final BeanDefinition getBeanDefinition(String beanName) {
         return beanDefinitionMap.get(beanName);
     }
 
     @Override
-    public boolean containsBeanDefinition(String beanName) {
+    public final boolean containsBeanDefinition(String beanName) {
         return beanDefinitionMap.containsKey(beanName);
     }
 
     @Override
-    public String[] getBeanDefinitionNames() {
+    public final String[] getBeanDefinitionNames() {
         return beanDefinitionMap.keySet().toArray(new String[0]);
     }
 
     @Override
-    public int getBeanDefinitionCount() {
+    public final int getBeanDefinitionCount() {
         return beanDefinitionMap.size();
     }
+
 }
+
