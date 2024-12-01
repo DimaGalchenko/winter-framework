@@ -71,4 +71,5 @@ class BeanDefinitionRegistryImplTest {
         assertFalse(beanFactory.containsBeanDefinition("testBean"),
                 "Registry should not contain 'testBean' after removal");
     }
+
 }
