@@ -31,8 +31,8 @@ public class AnnotationApplicationContext implements ApplicationContext, BeanFac
      * @param basePackages the base packages to scan for component classes
      */
     public AnnotationApplicationContext(String... basePackages) {
-        beanFactory = new DefaultBeanFactory();
-        this.scanner = new ClassPathBeanDefinitionScanner(beanFactory);
+        beanFactory = new DefaultBeanFactory(null);
+        this.scanner = new ClassPathBeanDefinitionScanner(null);
         scanner.scanPackages(basePackages);
     }
 
