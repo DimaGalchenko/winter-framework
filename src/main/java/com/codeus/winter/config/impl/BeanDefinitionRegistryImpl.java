@@ -13,8 +13,8 @@ public class BeanDefinitionRegistryImpl implements BeanDefinitionRegistry {
     @Override
     public void registerBeanDefinition(String beanName, BeanDefinition beanDefinition) {
         if (beanDefinitionMap.containsKey(beanName)) {
-            throw new BeanDefinitionStoreException("Cannot register bean definition with name '" + beanName +
-                    "': another bean with the same name already exists and overriding is not allowed.");
+            throw new BeanDefinitionStoreException(String.format("Cannot register bean definition with name '%s' " +
+                    "another bean with the same name already exists and overriding is not allowed.", beanName));
         }
         beanDefinitionMap.put(beanName, beanDefinition);
     }
@@ -22,7 +22,7 @@ public class BeanDefinitionRegistryImpl implements BeanDefinitionRegistry {
     @Override
     public void removeBeanDefinition(String beanName) {
         if (!beanDefinitionMap.containsKey(beanName)) {
-            throw new BeanDefinitionStoreException("No bean definition found for name '" + beanName + "'");
+            throw new BeanDefinitionStoreException( String.format("No bean definition found for name '%s'", beanName));
         }
         beanDefinitionMap.remove(beanName);
     }
