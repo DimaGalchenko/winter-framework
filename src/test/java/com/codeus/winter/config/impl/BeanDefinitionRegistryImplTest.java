@@ -54,8 +54,10 @@ class BeanDefinitionRegistryImplTest {
 
         beanFactory.registerBeanDefinition("testBean", mockBeanDefinition);
 
-        assertTrue(beanFactory.containsBeanDefinition("testBean"), "Registry should contain 'testBean'");
-        assertFalse(beanFactory.containsBeanDefinition("nonExistentBean"), "Registry should not contain 'nonExistentBean'");
+        assertTrue(beanFactory.containsBeanDefinition("testBean"),
+                "Registry should contain 'testBean'");
+        assertFalse(beanFactory.containsBeanDefinition("nonExistentBean"),
+                "Registry should not contain 'nonExistentBean'");
     }
 
     @Test
@@ -66,6 +68,7 @@ class BeanDefinitionRegistryImplTest {
         beanFactory.registerBeanDefinition("testBean", mockBeanDefinition);
         beanFactory.removeBeanDefinition("testBean");
 
-        assertFalse(beanFactory.containsBeanDefinition("testBean"), "Registry should not contain 'testBean' after removal");
+        assertFalse(beanFactory.containsBeanDefinition("testBean"),
+                "Registry should not contain 'testBean' after removal");
     }
 }
