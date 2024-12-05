@@ -4,7 +4,6 @@ import com.codeus.winter.config.BeanFactory;
 import com.codeus.winter.config.BeanPostProcessor;
 import com.codeus.winter.exception.BeanNotFoundException;
 import jakarta.annotation.Nullable;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -41,7 +40,6 @@ public class AutowiredAnnotationBeanPostProcessor implements BeanPostProcessor {
     public Object postProcessBeforeInitialization(Object bean, String beanName)
         throws BeanNotFoundException {
         try {
-            injectConstructor(bean);
             injectMethod(bean);
             injectField(bean);
         } catch (Exception e) {
@@ -72,34 +70,5 @@ public class AutowiredAnnotationBeanPostProcessor implements BeanPostProcessor {
                 field.set(bean, dependency);
             }
         }
-    }
-
-    private void injectConstructor(Object bean) throws IllegalAccessException {
-        Class<?> beanType = bean.getClass();
-        for (Constructor constructor : beanType.getConstructors()) {
-            if (constructor.isAnnotationPresent(Autowired.class)) {
-                for (Parameter parameter : constructor.getParameters()) {
-                    Class<?> type = parameter.getType();
-                    Object dependency = beanFactory.getBean(type);
-                    Field field = getFieldByType(beanType.getDeclaredFields(), type);
-                    if (field != null) {
-                        field.setAccessible(true);
-                        field.set(bean, dependency);
-                    }
-                }
-            }
-        }
-    }
-
-    private Field getFieldByType(Field[] declaredFields, Class<?> type) {
-        Field field = null;
-        for (Field declaredField : declaredFields) {
-            if (declaredField.getType().equals(type)) {
-                field = declaredField;
-            } else {
-                throw new IllegalArgumentException(String.format("Field '%s' not found", type));
-            }
-        }
-        return field;
     }
 }

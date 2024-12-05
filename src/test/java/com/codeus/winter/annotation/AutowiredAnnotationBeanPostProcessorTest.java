@@ -12,7 +12,6 @@ import org.reflections.Reflections;
 class AutowiredAnnotationBeanPostProcessorTest {
 
     private static final String AUTOWIRED_FIELD_BEAN_NAME = "AutowiredFieldTestClass";
-    private static final String AUTOWIRED_CONSTRUCTOR_BEAN_NAME = "AutowiredConstructorTestClass";
     private static final String AUTOWIRED_METHOD_BEAN_NAME = "AutowiredMethodTestClass";
     private DefaultBeanFactory beanFactory;
     private AutowiredAnnotationBeanPostProcessor postProcessor;
@@ -33,21 +32,6 @@ class AutowiredAnnotationBeanPostProcessorTest {
         // when
         Object actual = postProcessor.postProcessBeforeInitialization(bean,
             AUTOWIRED_FIELD_BEAN_NAME);
-
-        // then
-        Field dependency = actual.getClass().getDeclaredFields()[0];
-        dependency.setAccessible(true);
-        assertEquals(DependencyTestClass.class, dependency.getType());
-    }
-
-    @Test
-    void injectConstructor() {
-        // given
-        var bean = beanFactory.getBean(AutowiredConstructorTestClass.class);
-
-        // when
-        Object actual = postProcessor.postProcessBeforeInitialization(bean,
-            AUTOWIRED_CONSTRUCTOR_BEAN_NAME);
 
         // then
         Field dependency = actual.getClass().getDeclaredFields()[0];
