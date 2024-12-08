@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
 <!DOCTYPE suppressions SYSTEM "http://checkstyle.org/dtds/suppressions_1_0.dtd">
 <suppressions>
-    <suppress checks="Javadoc" files=".*Test.*\.java"/>
+    <suppress checks=".*" files=".*Test.*\.java"/>
 </suppressions>

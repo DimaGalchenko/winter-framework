@@ -37,6 +37,7 @@ dependencies {
     // JUnit Jupiter
     testImplementation platform("org.junit:junit-bom:${versions.junit}")
     testImplementation "org.junit.jupiter:junit-jupiter"
+    testImplementation "org.mockito:mockito-core:${versions.mockito}"
 }
 
 checkstyle {
