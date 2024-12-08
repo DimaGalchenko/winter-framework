@@ -18,12 +18,14 @@ public class WinterBeanDefinition implements BeanDefinition {
 
     private String beanClassName;
     private String scope = SCOPE_SINGLETON; // Default to singleton
-    private boolean autowireCandidate = true;
+
+    private boolean injectCandidate = true;
     private boolean primary = false;
     private String factoryBeanName;
     private String factoryMethodName;
     private String initMethodName;
     private String destroyMethodName;
+
     private final List<String> dependsOn = new ArrayList<>();
     /**
      * Set the class name of the bean that this definition describes.
@@ -97,11 +99,11 @@ public class WinterBeanDefinition implements BeanDefinition {
     /**
      * Specify whether this bean can be autowired into other beans.
      *
-     * @param autowireCandidate {@code true} if the bean is an autowire candidate; {@code false} otherwise.
+     * @param injectCandidate {@code true} if the bean is an autowire candidate; {@code false} otherwise.
      */
     @Override
-    public void setAutowireCandidate(boolean autowireCandidate) {
-        this.autowireCandidate = autowireCandidate;
+    public void setInjectCandidate(boolean injectCandidate) {
+        this.injectCandidate = injectCandidate;
     }
     /**
      * Check whether this bean is a candidate for autowiring.
@@ -109,8 +111,8 @@ public class WinterBeanDefinition implements BeanDefinition {
      * @return {@code true} if the bean can be autowired; {@code false} otherwise.
      */
     @Override
-    public boolean isAutowireCandidate() {
-        return this.autowireCandidate;
+    public boolean isInjectCandidate() {
+        return this.injectCandidate;
     }
     /**
      * Specify whether this bean is a primary candidate for autowiring when multiple candidates are available.

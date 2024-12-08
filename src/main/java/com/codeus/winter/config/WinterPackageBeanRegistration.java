@@ -43,19 +43,10 @@ public class WinterPackageBeanRegistration {
             WinterBeanDefinition beanDefinition = new WinterBeanDefinition();
             beanDefinition.setBeanClassName(clazz.getName());
             beanDefinition.setScope(BeanDefinition.SCOPE_SINGLETON);
-            beanDefinition.setAutowireCandidate(true);
+            beanDefinition.setInjectCandidate(true);
 
             if (!registry.containsBeanDefinition(beanName)) {
                 registry.registerBeanDefinition(beanName, beanDefinition);
-
-                try {
-                    Object beanInstance = clazz.getDeclaredConstructor().newInstance();
-                    ((DefaultBeanFactory) registry).registerBean(beanName, beanDefinition, beanInstance);
-                } catch (Exception e) {
-                    throw new RuntimeException(
-                            String.format("Failed to instantiate bean: %s", clazz.getName()), e);
-                }
-
             } else {
                 throw new NotUniqueBeanDefinitionException(
                         String.format("A bean with the name '%s' is already defined in the registry.", beanName)

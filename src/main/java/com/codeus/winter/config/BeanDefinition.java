@@ -68,15 +68,15 @@ public interface BeanDefinition {
      * It does not affect explicit references by name, which will get resolved even
      * if the specified bean is not marked as an autowire candidate. As a consequence,
      * autowiring by name will nevertheless inject a bean if the name matches.
-     * @param autowireCandidate true if this bean is a autowire candidate.
+     * @param injectCandidate true if this bean is a autowire candidate.
      */
-    void setAutowireCandidate(boolean autowireCandidate);
+    void setInjectCandidate(boolean injectCandidate);
 
     /**
      * Return whether this bean is a candidate for getting autowired into some other bean.
      * @return true if this bean is a candidate.
      */
-    boolean isAutowireCandidate();
+    boolean isInjectCandidate();
 
     /**
      * Set whether this bean is a primary autowire candidate.
