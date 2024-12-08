@@ -192,7 +192,7 @@ public class DefaultBeanFactory implements BeanFactory {
         String[] dependsOn = beanDefinition.getDependsOn();
         if (dependsOn != null) {
             for (String dependency : dependsOn) {
-                Optional.ofNullable(beanDefinitions.get(dependency))
+                BeanDefinition dependencyBeanDefinition = Optional.ofNullable(beanDefinitions.get(dependency))
                         .orElseThrow(() -> new BeanFactoryException("Dependency not found for bean: " + dependency));
 
                 if (!singletonBeans.containsKey(dependency)) {
@@ -214,9 +214,8 @@ public class DefaultBeanFactory implements BeanFactory {
 
         try {
             Class<?> beanClass = Class.forName(className);
-            Object beanInstance = resolveConstructor(beanClass);
 
-            return beanInstance;
+            return resolveConstructor(beanClass);
         } catch (ClassNotFoundException e) {
             throw new BeanFactoryException("Class with name not found: " + className, e);
         }
