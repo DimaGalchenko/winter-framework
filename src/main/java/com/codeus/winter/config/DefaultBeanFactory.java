@@ -127,13 +127,6 @@ public class DefaultBeanFactory implements BeanFactory {
         postProcessors.add(postProcessor);
     }
 
-    private void checkBeanNameUniqueness(@Nonnull final String beanName) {
-        if (singletonBeans.containsKey(beanName)) {
-            throw new NotUniqueBeanDefinitionException(
-                    String.format("Bean with name '%s' already exists", beanName));
-        }
-    }
-
     private <T> void checkBeanClassUniqueness(@Nonnull final Class<T> beanClass) {
         if (singletonBeans.values().stream().anyMatch(beanClass::isInstance)) {
             throw new NotUniqueBeanDefinitionException(
