@@ -37,7 +37,7 @@ public class AnnotationApplicationContext implements ApplicationContext, BeanFac
         this.beanDefinitionRegistry = new BeanDefinitionRegistryImpl();
         this.scanner = new ClassPathBeanDefinitionScanner(beanDefinitionRegistry);
         scanner.scanPackages(basePackages);
-        this.beanFactory = new DefaultBeanFactory(null); // TODO: return bean definitions from registry
+        this.beanFactory = new DefaultBeanFactory(null);
     }
 
     @Override

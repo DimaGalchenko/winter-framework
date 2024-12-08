@@ -22,7 +22,6 @@ public class DefaultBeanFactory implements BeanFactory {
     private final Map<String, Object> singletonBeans = new HashMap<>();
     private final Map<String, BeanDefinition> beanDefinitions;
     private final List<BeanPostProcessor> postProcessors = new ArrayList<>();
-    private final Map<String, Object> beanToNameMap = new HashMap<>();
 
     public DefaultBeanFactory(Map<String, BeanDefinition> beanDefinitions) {
         this.beanDefinitions = beanDefinitions;
