@@ -49,14 +49,6 @@ public interface BeanFactory {
             InvocationTargetException, InstantiationException, IllegalAccessException;
 
     /**
-     * Create a bean for the specified name.
-     *
-     * @param name bean's name
-     * @return the bean object for the specified bean's name
-     */
-    Object createBean(String name) throws BeanNotFoundException;
-
-    /**
      * Register a bean for its name, BeanDefinition, and instance.
      *
      * @param name           bean's name.

@@ -35,9 +35,9 @@ public class AnnotationApplicationContext implements ApplicationContext, BeanFac
      */
     public AnnotationApplicationContext(String... basePackages) {
         this.beanDefinitionRegistry = new BeanDefinitionRegistryImpl();
-        beanFactory = new DefaultBeanFactory();
         this.scanner = new ClassPathBeanDefinitionScanner(beanDefinitionRegistry);
         scanner.scanPackages(basePackages);
+        this.beanFactory = new DefaultBeanFactory(null); // TODO: return bean definitions from registry
     }
 
     @Override
@@ -94,11 +94,6 @@ public class AnnotationApplicationContext implements ApplicationContext, BeanFac
             throws BeanNotFoundException, NoSuchMethodException, InvocationTargetException,
             InstantiationException, IllegalAccessException {
         return beanFactory.createBean(beanClass);
-    }
-
-    @Override
-    public final Object createBean(String name) throws BeanNotFoundException {
-        return beanFactory.createBean(name);
     }
 
     @Override

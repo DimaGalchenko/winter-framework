@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Default implementation of the {@link BeanFactory} interface.
@@ -37,13 +38,8 @@ public class DefaultBeanFactory implements BeanFactory {
     @Nullable
     @Override
     public final Object getBean(@Nonnull final String name) throws BeanNotFoundException {
-        if (singletonBeans.containsKey(name)) {
-            final Object bean = singletonBeans.get(name);
-
-            return bean;
-        } else {
-            throw new BeanNotFoundException(String.format("Bean: %s not found", name));
-        }
+        return Optional.ofNullable(singletonBeans.get(name))
+                .orElseThrow(() -> new BeanNotFoundException(String.format("Bean: %s not found", name)));
     }
 
     /**
@@ -56,7 +52,7 @@ public class DefaultBeanFactory implements BeanFactory {
     @Nullable
     @Override
     public final <T> T getBean(@Nonnull final String name,
-                         @Nonnull final Class<T> requiredType) throws BeanNotFoundException {
+                               @Nonnull final Class<T> requiredType) throws BeanNotFoundException {
         Object bean = singletonBeans.get(name);
 
         if (bean == null) {
@@ -106,21 +102,6 @@ public class DefaultBeanFactory implements BeanFactory {
     }
 
     /**
-     * Creating bean object with name.
-     *
-     * @param name bean's name
-     * @return bean object if its not possible throw exception.
-     */
-    @Override
-    public final Object createBean(@Nonnull final String name) throws NotUniqueBeanDefinitionException {
-        checkBeanNameUniqueness(name);
-
-        Object newBean = new Object();
-        singletonBeans.put(name, newBean);
-        return newBean;
-    }
-
-    /**
      * Register bean in the bean's storage.
      *
      * @param name           bean's name.
@@ -129,8 +110,8 @@ public class DefaultBeanFactory implements BeanFactory {
      */
     @Override
     public final void registerBean(@Nonnull final String name,
-                             @Nonnull final BeanDefinition beanDefinition,
-                             @Nonnull final Object beanInstance) {
+                                   @Nonnull final BeanDefinition beanDefinition,
+                                   @Nonnull final Object beanInstance) {
         if (beanDefinition.isSingleton()) {
             singletonBeans.put(name, beanInstance);
         }
@@ -165,7 +146,7 @@ public class DefaultBeanFactory implements BeanFactory {
         Map<String, Boolean> initializationStatuses = new HashMap<>();
         List<String> pendingBeans = new ArrayList<>();
 
-        for (Map.Entry<String, BeanDefinition> entry: beanDefinitions.entrySet()) {
+        for (Map.Entry<String, BeanDefinition> entry : beanDefinitions.entrySet()) {
             String beanName = entry.getKey();
             BeanDefinition beanDefinition = entry.getValue();
 
@@ -181,7 +162,7 @@ public class DefaultBeanFactory implements BeanFactory {
             isAnyBeanResolved = false;
             List<String> stillPendingBeans = new ArrayList<>();
 
-            for (String beanName: pendingBeans) {
+            for (String beanName : pendingBeans) {
                 BeanDefinition beanDefinition = beanDefinitions.get(beanName);
                 boolean isInitialized = tryInitializeBean(beanName, beanDefinition, initializationStatuses);
                 if (isInitialized) {
@@ -198,7 +179,11 @@ public class DefaultBeanFactory implements BeanFactory {
         }
     }
 
-    private boolean tryInitializeBean(String beanName, BeanDefinition beanDefinition, Map<String, Boolean> initializationStatuses) {
+    private boolean tryInitializeBean(
+            String beanName,
+            BeanDefinition beanDefinition,
+            Map<String, Boolean> initializationStatuses) {
+
         if (Boolean.TRUE.equals(initializationStatuses.get(beanName))) {
             return false;
         }
@@ -207,12 +192,13 @@ public class DefaultBeanFactory implements BeanFactory {
 
         String[] dependsOn = beanDefinition.getDependsOn();
         if (dependsOn != null) {
-            for (String dependency: dependsOn) {
-                BeanDefinition dependencyBeanDefinition = beanDefinitions.get(dependency);
-                if (dependencyBeanDefinition == null) {
-                    throw new BeanFactoryException("Dependency not found for bean: " + dependency);
+            for (String dependency : dependsOn) {
+                Optional.ofNullable(beanDefinitions.get(dependency))
+                        .orElseThrow(() -> new BeanFactoryException("Dependency not found for bean: " + dependency));
+
+                if (!singletonBeans.containsKey(dependency)) {
+                    return false;
                 }
-                tryInitializeBean(beanName, beanDefinition, initializationStatuses);
             }
         }
 
@@ -224,16 +210,12 @@ public class DefaultBeanFactory implements BeanFactory {
     }
 
     private Object createBeanInstance(String beanName, BeanDefinition beanDefinition) {
-        String className = beanDefinition.getBeanClassName();
-        if (className == null) {
-            throw new BeanFactoryException("Bean class name is not set for bean: " + beanName);
-        }
+        String className = Optional.ofNullable(beanDefinition.getBeanClassName())
+                .orElseThrow(() -> new BeanFactoryException("Bean class name is not set for bean: " + beanName));
 
         try {
             Class<?> beanClass = Class.forName(className);
             Object beanInstance = resolveConstructor(beanClass);
-
-            invokeInitMethod(beanDefinition.getInitMethodName(), beanInstance);
 
             return beanInstance;
         } catch (ClassNotFoundException e) {
@@ -241,29 +223,15 @@ public class DefaultBeanFactory implements BeanFactory {
         }
     }
 
-    private void invokeInitMethod(String initMethodName, Object beanInstance) {
-        if (initMethodName != null) {
-            try {
-                beanInstance.getClass().getMethod(initMethodName).invoke(beanInstance);
-            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                throw new BeanFactoryException(String.format(
-                        "Unable to invoke init method for bean '%s' due to: %s",
-                        beanInstance.getClass().getSimpleName(),
-                        e.getMessage()
-                ), e);
-            }
-        }
-    }
-
     private Object resolveConstructor(Class<?> beanClass) {
         Constructor<?>[] constructors = beanClass.getConstructors();
 
-        for (Constructor<?> constructor: constructors) {
+        for (Constructor<?> constructor : constructors) {
             Class<?>[] parameterTypes = constructor.getParameterTypes();
             Object[] resolvedDependencies = new Object[parameterTypes.length];
             boolean canResolve = true;
 
-            for (int i = 0; i < parameterTypes.length;  i++) {
+            for (int i = 0; i < parameterTypes.length; i++) {
                 Class<?> dependencyClass = parameterTypes[i];
                 Object dependency = singletonBeans.values().stream()
                         .filter(dependencyClass::isInstance)

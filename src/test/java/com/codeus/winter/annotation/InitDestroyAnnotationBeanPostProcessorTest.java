@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.codeus.winter.config.DefaultBeanFactory;
 import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,7 +18,7 @@ class InitDestroyAnnotationBeanPostProcessorTest {
 
     @BeforeEach
     void setUpBeforeClass() {
-        beanFactory = new DefaultBeanFactory();
+        beanFactory = new DefaultBeanFactory(new HashMap<>());
         postProcessor = new InitDestroyAnnotationBeanPostProcessor();
         createBeanTestClass();
     }
