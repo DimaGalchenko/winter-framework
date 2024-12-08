@@ -163,7 +163,8 @@ class DefaultBeanFactoryTest {
     void testGetBeanThrowExceptionWhenBeanIsNull() {
         BeanFactory factory = new DefaultBeanFactory(new HashMap<>());
 
-        BeanNotFoundException exception = assertThrows(BeanNotFoundException.class, () -> factory.getBean("BeanA"));
+        BeanNotFoundException exception = assertThrows(BeanNotFoundException.class,
+                () -> factory.getBean("BeanA"));
         assertEquals("Bean: BeanA not found", exception.getMessage());
     }
 
@@ -249,7 +250,8 @@ class DefaultBeanFactoryTest {
 
     @Test
     @DisplayName("Should create bean")
-    void testCreateBean() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    void testCreateBean()
+            throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         BeanFactory beanFactory = new DefaultBeanFactory(new HashMap<>());
 
         beanFactory.createBean(BeanA.class);
