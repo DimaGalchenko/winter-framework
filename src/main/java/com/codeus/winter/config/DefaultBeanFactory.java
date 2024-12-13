@@ -1,24 +1,32 @@
 package com.codeus.winter.config;
 
+import com.codeus.winter.exception.BeanFactoryException;
 import com.codeus.winter.exception.BeanNotFoundException;
 import com.codeus.winter.exception.NotUniqueBeanDefinitionException;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Default implementation of the {@link BeanFactory} interface.
  */
-public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry {
+public class DefaultBeanFactory implements BeanFactory {
 
     private final Map<String, Object> singletonBeans = new HashMap<>();
-    private final Map<String, BeanDefinition> beanDefinitions = new HashMap<>();
+    private final Map<String, BeanDefinition> beanDefinitions;
     private final List<BeanPostProcessor> postProcessors = new ArrayList<>();
+
+    public DefaultBeanFactory(Map<String, BeanDefinition> beanDefinitions) {
+        this.beanDefinitions = beanDefinitions;
+        initializeBeans();
+    }
 
     /**
      * Request beans from the storage with specified parameters.
@@ -29,16 +37,8 @@ public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry {
     @Nullable
     @Override
     public final Object getBean(@Nonnull final String name) throws BeanNotFoundException {
-        if (singletonBeans.containsKey(name)) {
-            final Object bean = singletonBeans.get(name);
-            postProcessors
-                    .forEach(postProcessor -> postProcessor.postProcessBeforeInitialization(bean, name));
-            postProcessors
-                    .forEach(postProcessor -> postProcessor.postProcessAfterInitialization(bean, name));
-            return bean;
-        } else {
-            throw new BeanNotFoundException(String.format("Bean: %s not found", name));
-        }
+        return Optional.ofNullable(singletonBeans.get(name))
+                .orElseThrow(() -> new BeanNotFoundException(String.format("Bean: %s not found", name)));
     }
 
     /**
@@ -51,7 +51,7 @@ public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry {
     @Nullable
     @Override
     public final <T> T getBean(@Nonnull final String name,
-                         @Nonnull final Class<T> requiredType) throws BeanNotFoundException {
+                               @Nonnull final Class<T> requiredType) throws BeanNotFoundException {
         Object bean = singletonBeans.get(name);
 
         if (bean == null) {
@@ -101,21 +101,6 @@ public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry {
     }
 
     /**
-     * Creating bean object with name.
-     *
-     * @param name bean's name
-     * @return bean object if its not possible throw exception.
-     */
-    @Override
-    public final Object createBean(@Nonnull final String name) throws NotUniqueBeanDefinitionException {
-        checkBeanNameUniqueness(name);
-
-        Object newBean = new Object();
-        singletonBeans.put(name, newBean);
-        return newBean;
-    }
-
-    /**
      * Register bean in the bean's storage.
      *
      * @param name           bean's name.
@@ -124,8 +109,8 @@ public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry {
      */
     @Override
     public final void registerBean(@Nonnull final String name,
-                             @Nonnull final BeanDefinition beanDefinition,
-                             @Nonnull final Object beanInstance) {
+                                   @Nonnull final BeanDefinition beanDefinition,
+                                   @Nonnull final Object beanInstance) {
         if (beanDefinition.isSingleton()) {
             singletonBeans.put(name, beanInstance);
         }
@@ -142,13 +127,6 @@ public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry {
         postProcessors.add(postProcessor);
     }
 
-    private void checkBeanNameUniqueness(@Nonnull final String beanName) {
-        if (singletonBeans.containsKey(beanName)) {
-            throw new NotUniqueBeanDefinitionException(
-                    String.format("Bean with name '%s' already exists", beanName));
-        }
-    }
-
     private <T> void checkBeanClassUniqueness(@Nonnull final Class<T> beanClass) {
         if (singletonBeans.values().stream().anyMatch(beanClass::isInstance)) {
             throw new NotUniqueBeanDefinitionException(
@@ -156,33 +134,115 @@ public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry {
         }
     }
 
-    @Override
-    public final void registerBeanDefinition(String beanName, BeanDefinition beanDefinition) {
+    private void initializeBeans() {
+        Map<String, Boolean> initializationStatuses = new HashMap<>();
+        List<String> pendingBeans = new ArrayList<>();
 
+        for (Map.Entry<String, BeanDefinition> entry : beanDefinitions.entrySet()) {
+            String beanName = entry.getKey();
+            BeanDefinition beanDefinition = entry.getValue();
+
+            boolean isInitialized = tryInitializeBean(beanName, beanDefinition, initializationStatuses);
+
+            if (!isInitialized) {
+                pendingBeans.add(beanName);
+            }
+        }
+
+        boolean isAnyBeanResolved;
+        while (!pendingBeans.isEmpty()) {
+            isAnyBeanResolved = false;
+            List<String> stillPendingBeans = new ArrayList<>();
+
+            for (String beanName : pendingBeans) {
+                BeanDefinition beanDefinition = beanDefinitions.get(beanName);
+                boolean isInitialized = tryInitializeBean(beanName, beanDefinition, initializationStatuses);
+                if (isInitialized) {
+                    isAnyBeanResolved = true;
+                } else {
+                    stillPendingBeans.add(beanName);
+                }
+            }
+
+            if (!isAnyBeanResolved) {
+                throw new BeanFactoryException("Unresolved dependencies for beans: " + stillPendingBeans);
+            }
+            pendingBeans = stillPendingBeans;
+        }
     }
 
-    @Override
-    public final void removeBeanDefinition(String beanName) {
+    private boolean tryInitializeBean(
+            String beanName,
+            BeanDefinition beanDefinition,
+            Map<String, Boolean> initializationStatuses) {
 
+        if (Boolean.TRUE.equals(initializationStatuses.get(beanName))) {
+            return false;
+        }
+
+        initializationStatuses.put(beanName, false);
+
+        String[] dependsOn = beanDefinition.getDependsOn();
+        if (dependsOn != null) {
+            for (String dependency : dependsOn) {
+                BeanDefinition dependencyBeanDefinition = Optional.ofNullable(beanDefinitions.get(dependency))
+                        .orElseThrow(() -> new BeanFactoryException("Dependency not found for bean: " + dependency));
+
+                if (!singletonBeans.containsKey(dependency)) {
+                    return false;
+                }
+            }
+        }
+
+        Object beanInstance = createBeanInstance(beanName, beanDefinition);
+        singletonBeans.put(beanName, beanInstance);
+
+        initializationStatuses.put(beanName, true);
+        return true;
     }
 
-    @Override
-    public final BeanDefinition getBeanDefinition(String beanName) {
-        return null;
+    private Object createBeanInstance(String beanName, BeanDefinition beanDefinition) {
+        String className = Optional.ofNullable(beanDefinition.getBeanClassName())
+                .orElseThrow(() -> new BeanFactoryException("Bean class name is not set for bean: " + beanName));
+
+        try {
+            Class<?> beanClass = Class.forName(className);
+
+            return resolveConstructor(beanClass);
+        } catch (ClassNotFoundException e) {
+            throw new BeanFactoryException("Class with name not found: " + className, e);
+        }
     }
 
-    @Override
-    public final boolean containsBeanDefinition(String beanName) {
-        return false;
-    }
+    private Object resolveConstructor(Class<?> beanClass) {
+        Constructor<?>[] constructors = beanClass.getConstructors();
 
-    @Override
-    public final String[] getBeanDefinitionNames() {
-        return new String[0];
-    }
+        for (Constructor<?> constructor : constructors) {
+            Class<?>[] parameterTypes = constructor.getParameterTypes();
+            Object[] resolvedDependencies = new Object[parameterTypes.length];
+            boolean canResolve = true;
 
-    @Override
-    public final int getBeanDefinitionCount() {
-        return 0;
+            for (int i = 0; i < parameterTypes.length; i++) {
+                Class<?> dependencyClass = parameterTypes[i];
+                Object dependency = singletonBeans.values().stream()
+                        .filter(dependencyClass::isInstance)
+                        .findFirst()
+                        .orElse(null);
+                if (dependency == null) {
+                    canResolve = false;
+                    break;
+                }
+                resolvedDependencies[i] = dependency;
+            }
+
+            if (canResolve) {
+                try {
+                    return constructor.newInstance(resolvedDependencies);
+                } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
+                    throw new BeanFactoryException("Unable to create bean instance due to: " + e.getMessage(), e);
+                }
+            }
+        }
+        throw new BeanFactoryException("Unable to resolve dependencies for class: " + beanClass.getName());
     }
 }
