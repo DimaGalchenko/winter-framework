@@ -1,6 +1,7 @@
 package com.codeus.winter.config;
 
 import com.codeus.winter.annotation.Component;
+import com.codeus.winter.config.impl.PackageScannerImpl;
 import org.junit.jupiter.api.Test;
 
 import java.lang.annotation.Annotation;
@@ -10,13 +11,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Unit tests for {@link WinterPackageScanner}.
+ * Unit tests for {@link PackageScannerImpl}.
  * These tests verify that the package scanner correctly identifies classes
  * annotated with specific annotations within a given package.
  */
-class WinterPackageScannerTest {
+class PackageScannerImplTest {
 
-    private final WinterPackageScanner packageScanner = new WinterPackageScanner();
+    private final PackageScannerImpl packageScanner = new PackageScannerImpl();
 
     /**
      * Tests that the scanner correctly finds classes annotated with a given annotation.

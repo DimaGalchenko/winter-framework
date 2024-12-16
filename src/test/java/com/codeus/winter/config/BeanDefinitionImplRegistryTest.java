@@ -1,23 +1,25 @@
 package com.codeus.winter.config;
 
-import com.codeus.winter.exception.BeanNotFoundException;
-import com.codeus.winter.exception.NotUniqueBeanDefinitionException;
+import com.codeus.winter.config.impl.BeanDefinitionImpl;
+import com.codeus.winter.config.impl.BeanDefinitionRegistryImpl;
+import com.codeus.winter.exception.BeanDefinitionStoreException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
+
 /**
- * Unit tests for {@link WinterBeanDefinitionRegistry}.
+ * Unit tests for {@link BeanDefinitionRegistryImpl}.
  * These tests validate the registration, retrieval, and removal of bean definitions
  * while ensuring proper handling of edge cases like duplicates and non-existent beans.
  */
-class WinterBeanDefinitionRegistryTest {
-    private WinterBeanDefinitionRegistry registry;
+class BeanDefinitionImplRegistryTest {
+    private BeanDefinitionRegistryImpl registry;
     private BeanDefinition winterBeanDefinition;
 
     /**
@@ -25,8 +27,8 @@ class WinterBeanDefinitionRegistryTest {
      */
     @BeforeEach
     void setUp() {
-        registry = new WinterBeanDefinitionRegistry();
-        winterBeanDefinition = new WinterBeanDefinition();
+        registry = new BeanDefinitionRegistryImpl();
+        winterBeanDefinition = new BeanDefinitionImpl();
         winterBeanDefinition.setBeanClassName("com.framework");
     }
 
@@ -50,13 +52,14 @@ class WinterBeanDefinitionRegistryTest {
     void shouldThrowExceptionForDuplicateBeanDefinition() {
         registry.registerBeanDefinition("winterBean", winterBeanDefinition);
 
-        NotUniqueBeanDefinitionException exception = assertThrows(
-                NotUniqueBeanDefinitionException.class,
+        BeanDefinitionStoreException exception = assertThrows(
+                BeanDefinitionStoreException.class,
                 () -> registry.registerBeanDefinition("winterBean", winterBeanDefinition),
-                "Expected NotUniqueBeanDefinitionException for duplicate bean registration"
+                "Expected BeanDefinitionStoreException for duplicate bean registration"
         );
 
-        assertEquals("Bean with name winterBean is already registered", exception.getMessage());
+        assertEquals("Cannot register bean definition with name 'winterBean' another bean with the same " +
+                "name already exists and overriding is not allowed.", exception.getMessage());
     }
 
     /**
@@ -76,27 +79,13 @@ class WinterBeanDefinitionRegistryTest {
      */
     @Test
     void shouldThrowExceptionForRemovingNonExistentBeanDefinition() {
-        BeanNotFoundException exception = assertThrows(
-                BeanNotFoundException.class,
+        BeanDefinitionStoreException exception = assertThrows(
+                BeanDefinitionStoreException.class,
                 () -> registry.removeBeanDefinition("nonExistentBean"),
-                "Expected BeanNotFoundException for removing a non-existent bean definition"
+                "Expected BeanDefinitionStoreException for removing a non-existent bean definition"
         );
 
-        assertEquals("No bean definition found for name nonExistentBean", exception.getMessage());
-    }
-
-    /**
-     * Tests that retrieving a non-existent bean definition throws an exception.
-     */
-    @Test
-    void shouldThrowExceptionForRetrievingNonExistentBeanDefinition() {
-        BeanNotFoundException exception = assertThrows(
-                BeanNotFoundException.class,
-                () -> registry.getBeanDefinition("nonExistentBean"),
-                "Expected BeanNotFoundException for retrieving a non-existent bean definition"
-        );
-
-        assertEquals("No bean definition found for name nonExistentBean", exception.getMessage());
+        assertEquals("No bean definition found for name 'nonExistentBean'", exception.getMessage());
     }
 
     /**

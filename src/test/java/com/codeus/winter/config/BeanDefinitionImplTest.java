@@ -1,5 +1,6 @@
 package com.codeus.winter.config;
 
+import com.codeus.winter.config.impl.BeanDefinitionImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -9,18 +10,18 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 /**
- * Unit tests for {@link WinterBeanDefinition}.
+ * Unit tests for {@link BeanDefinitionImpl}.
  * These tests validate the behavior of the getter and setter methods for bean metadata.
  */
-class WinterBeanDefinitionTest {
-    private WinterBeanDefinition beanDefinition;
+class BeanDefinitionImplTest {
+    private BeanDefinitionImpl beanDefinition;
 
     /**
-     * Sets up the test environment by creating a new {@link WinterBeanDefinition} instance.
+     * Sets up the test environment by creating a new {@link BeanDefinitionImpl} instance.
      */
     @BeforeEach
     void setUp() {
-        beanDefinition = new WinterBeanDefinition();
+        beanDefinition = new BeanDefinitionImpl();
     }
 
     /**

@@ -1,5 +1,6 @@
-package com.codeus.winter.config;
+package com.codeus.winter.config.impl;
 
+import com.codeus.winter.config.BeanDefinition;
 import jakarta.annotation.Nullable;
 
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ import java.util.List;
  * scope, dependencies, and other properties required for its lifecycle.
  * </p>
  */
-public class WinterBeanDefinition implements BeanDefinition {
+public class BeanDefinitionImpl implements BeanDefinition {
 
     private String beanClassName;
     private String scope = SCOPE_SINGLETON; // Default to singleton

@@ -1,6 +1,7 @@
 package com.codeus.winter.config;
 
 import com.codeus.winter.annotation.Component;
+import com.codeus.winter.config.impl.BeanDefinitionImpl;
 import com.codeus.winter.exception.NotUniqueBeanDefinitionException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,25 +19,25 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
 
 /**
- * Unit tests for {@link WinterPackageBeanRegistration}.
+ * Unit tests for {@link PackageBeanRegistration}.
  * These tests verify the behavior of the bean registration process, including
  * handling annotated classes, duplicate bean names, and empty package scenarios.
  */
-class WinterPackageBeanRegistrationTest {
+class PackageBeanRegistrationTest {
 
     private PackageScanner packageScanner;
     private BeanDefinitionRegistry registry;
-    private WinterPackageBeanRegistration beanRegistration;
+    private PackageBeanRegistration beanRegistration;
 
     /**
      * Sets up the test environment by mocking dependencies and initializing
-     * the {@link WinterPackageBeanRegistration} instance.
+     * the {@link PackageBeanRegistration} instance.
      */
     @BeforeEach
     void setUp() {
         packageScanner = mock(PackageScanner.class);
         registry = mock(BeanDefinitionRegistry.class);
-        beanRegistration = new WinterPackageBeanRegistration(packageScanner, registry);
+        beanRegistration = new PackageBeanRegistration(packageScanner, registry);
     }
 
     /**
@@ -51,7 +52,7 @@ class WinterPackageBeanRegistrationTest {
         when(registry.containsBeanDefinition("winterComponent")).thenReturn(false);
         beanRegistration.registerBeans("com.framework");
 
-        verify(registry).registerBeanDefinition(eq("winterComponent"), any(WinterBeanDefinition.class));
+        verify(registry).registerBeanDefinition(eq("winterComponent"), any(BeanDefinitionImpl.class));
     }
 
     /**
@@ -81,7 +82,7 @@ class WinterPackageBeanRegistrationTest {
 
         beanRegistration.registerBeans("com.framework");
 
-        verify(registry, never()).registerBeanDefinition(anyString(), any(WinterBeanDefinition.class));
+        verify(registry, never()).registerBeanDefinition(anyString(), any(BeanDefinitionImpl.class));
     }
 
     /**

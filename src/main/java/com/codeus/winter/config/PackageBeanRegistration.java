@@ -2,6 +2,7 @@ package com.codeus.winter.config;
 
 import com.codeus.winter.annotation.Component;
 import com.codeus.winter.annotation.Bean;
+import com.codeus.winter.config.impl.BeanDefinitionImpl;
 import com.codeus.winter.exception.NotUniqueBeanDefinitionException;
 
 import java.util.Set;
@@ -10,7 +11,7 @@ import java.util.Set;
  * Responsible for scanning a package for classes annotated with {@link Component} or {@link Bean},
  * and registering their {@link BeanDefinition}s in the provided {@link BeanDefinitionRegistry}.
  */
-public class WinterPackageBeanRegistration {
+public class PackageBeanRegistration {
 
     private final PackageScanner packageScanner;
     private final BeanDefinitionRegistry registry;
@@ -21,7 +22,7 @@ public class WinterPackageBeanRegistration {
      * @param packageScanner the {@link PackageScanner} for scanning annotated classes
      * @param registry       the {@link BeanDefinitionRegistry} to register bean definitions
      */
-    public WinterPackageBeanRegistration(PackageScanner packageScanner, BeanDefinitionRegistry registry) {
+    public PackageBeanRegistration(PackageScanner packageScanner, BeanDefinitionRegistry registry) {
         this.packageScanner = packageScanner;
         this.registry = registry;
     }
@@ -40,7 +41,7 @@ public class WinterPackageBeanRegistration {
         for (Class<?> clazz : componentClasses) {
             String beanName = getBeanName(clazz);
 
-            WinterBeanDefinition beanDefinition = new WinterBeanDefinition();
+            BeanDefinitionImpl beanDefinition = new BeanDefinitionImpl();
             beanDefinition.setBeanClassName(clazz.getName());
             beanDefinition.setScope(BeanDefinition.SCOPE_SINGLETON);
             beanDefinition.setInjectCandidate(true);

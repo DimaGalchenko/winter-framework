@@ -1,5 +1,6 @@
-package com.codeus.winter.config;
+package com.codeus.winter.config.impl;
 
+import com.codeus.winter.config.PackageScanner;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
 import org.reflections.util.ConfigurationBuilder;
@@ -8,7 +9,7 @@ import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Set;
 
-public class WinterPackageScanner implements PackageScanner {
+public class PackageScannerImpl implements PackageScanner {
 
     @Override
     public final Set<Class<?>> findClassesWithAnnotations(String packageName,
