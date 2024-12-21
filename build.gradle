@@ -34,6 +34,9 @@ dependencies {
     // Jakarta
     implementation 'jakarta.annotation:jakarta.annotation-api:3.0.0'
 
+    implementation 'org.owasp:dependency-check-core:11.1.0'
+
+
     // JUnit Jupiter
     testImplementation platform("org.junit:junit-bom:${versions.junit}")
     testImplementation "org.junit.jupiter:junit-jupiter"

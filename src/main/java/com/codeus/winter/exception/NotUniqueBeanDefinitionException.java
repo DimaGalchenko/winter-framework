@@ -1,13 +1,13 @@
 package com.codeus.winter.exception;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 /**
  * Exception for not uniq BeanDefinition.
  */
 public class NotUniqueBeanDefinitionException extends RuntimeException {
     /**
-     * Constructor with message.
+     * Constructor with a message.
      *
      * @param message message.
      */
