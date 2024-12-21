@@ -32,7 +32,7 @@ public abstract class PropertySource<T> {
     /**
      * Getter for Name.
      *
-     * @return String as properties name.
+     * @return String as properties' name.
      */
     public String getName() {
         return this.name;
