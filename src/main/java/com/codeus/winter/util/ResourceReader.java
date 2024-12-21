@@ -5,18 +5,18 @@ import java.util.List;
 public interface ResourceReader<T> {
 
     /**
-     * Checking existing resource file.
+     * Checking an existing resource file.
      *
-     * @param filepath string path of file.
+     * @param filepath string path of a file.
      * @param filename filename.
-     * @return true if resource file is exist.
+     * @return true if a resource file exists.
      */
     boolean isFileExist(String filepath, String filename);
 
     /**
      * Method for reading properties from file to object.
      *
-     * @param filePath string path of file.
+     * @param filePath string path of a file.
      * @param fileName filename.
      * @return list of properties.
      */

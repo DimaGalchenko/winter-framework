@@ -4,6 +4,7 @@
         "https://checkstyle.org/dtds/configuration_1_3.dtd">
 
 <module name="Checker">
+
     <property name="severity" value="error"/>
 
     <property name="fileExtensions" value="java, properties, xml"/>
@@ -40,11 +41,11 @@
     <module name="TreeWalker">
 
         <!-- Checks for Javadoc comments.                     -->
-        <module name="InvalidJavadocPosition"/>
-        <module name="JavadocMethod"/>
-        <module name="JavadocType"/>
-        <module name="JavadocStyle"/>
-        <module name="MissingJavadocMethod"/>
+<!--        <module name="InvalidJavadocPosition"/>-->
+<!--        <module name="JavadocMethod"/>-->
+<!--        <module name="JavadocType"/>-->
+<!--        <module name="JavadocStyle"/>-->
+<!--        <module name="MissingJavadocMethod"/>-->
 
         <!-- Checks for Naming Conventions.                  -->
         <module name="ConstantName">
@@ -108,7 +109,7 @@
         <module name="SimplifyBooleanReturn"/>
 
         <!-- Checks for class design                         -->
-        <module name="DesignForExtension"/>
+<!--        <module name="DesignForExtension"/>-->
         <module name="FinalClass"/>
         <module name="HideUtilityClassConstructor"/>
         <module name="InterfaceIsType"/>

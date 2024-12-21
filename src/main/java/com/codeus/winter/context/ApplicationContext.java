@@ -1,6 +1,6 @@
 package com.codeus.winter.context;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 public interface ApplicationContext {
 

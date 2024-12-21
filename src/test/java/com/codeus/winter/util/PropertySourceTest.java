@@ -7,8 +7,11 @@ import org.mockito.Mockito;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -59,6 +62,22 @@ class PropertySourceTest {
     }
 
     @Test
+    void testNotEquals() {
+        PropertySource<String> differentPropertySource = new PropertySource<>("differentName", "source") {
+            @Override
+            protected Object getProperty(String name) {
+                return null;
+            }
+
+            @Override
+            protected boolean containsProperty(String name) {
+                return false;
+            }
+        };
+        assertNotEquals(propertySource, differentPropertySource);
+    }
+
+    @Test
     void testHashCode() {
         PropertySource<String> anotherPropertySource = new PropertySource<>("testName", "anotherSource") {
             @Override
@@ -72,6 +91,23 @@ class PropertySourceTest {
             }
         };
         assertEquals(propertySource.hashCode(), anotherPropertySource.hashCode());
+    }
+
+    @Test
+    void testConstructorWithOneParameter() {
+        PropertySource<Object> singleParamPropertySource = new PropertySource<>("singleParam") {
+            @Override
+            protected Object getProperty(String name) {
+                return null;
+            }
+
+            @Override
+            protected boolean containsProperty(String name) {
+                return false;
+            }
+        };
+        assertEquals("singleParam", singleParamPropertySource.getName());
+        assertNotNull(singleParamPropertySource.getSource());
     }
 
     @Test
@@ -163,6 +199,10 @@ class ResourceReaderTest {
         when(resourceReader.isFileExist("path", "file")).thenReturn(true);
         assertTrue(resourceReader.isFileExist("path", "file"));
         verify(resourceReader, times(1)).isFileExist("path", "file");
+
+        when(resourceReader.isFileExist("path", "nonexistentFile")).thenReturn(false);
+        assertFalse(resourceReader.isFileExist("path", "nonexistentFile"));
+        verify(resourceReader, times(1)).isFileExist("path", "nonexistentFile");
     }
 
     @Test
@@ -197,5 +237,10 @@ class ResourceReaderTest {
         assertEquals("name1", result.get(0).getName());
         assertEquals("name2", result.get(1).getName());
         verify(resourceReader, times(1)).readProperties("path", "file");
+
+        when(resourceReader.readProperties("path", "emptyFile")).thenReturn(List.of());
+        List<PropertySource<String>> emptyResult = resourceReader.readProperties("path", "emptyFile");
+        assertTrue(emptyResult.isEmpty());
+        verify(resourceReader, times(1)).readProperties("path", "emptyFile");
     }
 }

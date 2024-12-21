@@ -1,6 +1,6 @@
 package com.codeus.winter.exception;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 public class BeanNotFoundException extends RuntimeException {
     /**
