@@ -36,7 +36,6 @@ public List<PropertySource<Object>> readProperties(String filePath, String fileN
     return propertySources;
 }
 
-
     private static class SimplePropertySource extends PropertySource<Object> {
         private final Object value;
 
