@@ -1,5 +1,7 @@
 package com.codeus.winter.util;
 
+import com.codeus.winter.exception.PropertySourceException;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -26,7 +28,7 @@ public class PropertiesResourceReader implements ResourceReader<String> {
                 propertySources.add(new SimplePropertySource(name, properties.getProperty(name)));
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new PropertySourceException(e.getMessage());
         }
         return propertySources;
     }

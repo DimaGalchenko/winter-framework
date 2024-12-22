@@ -1,5 +1,6 @@
 package com.codeus.winter.util;
 
+import com.codeus.winter.exception.PropertySourceException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.yaml.snakeyaml.DumperOptions;
@@ -16,6 +17,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class YamlResourceReaderTest {
 
@@ -59,4 +61,25 @@ class YamlResourceReaderTest {
         assertEquals("key2", property2.getName());
         assertEquals("value2", property2.getSource());
     }
+
+    @Test
+    void testReadPropertiesException() {
+        assertThrows(PropertySourceException.class,
+                () -> reader.readProperties(tempFile.getParent(), "nonexistent.yaml"));
+    }
+
+    @Test
+void testReadPropertiesEmptyFile() throws IOException {
+    // We create an empty "empty.yaml" file
+    File emptyFile = new File(tempFile.getParent(), "empty.yaml");
+    if (!emptyFile.exists()) {
+        emptyFile.createNewFile();
+    }
+
+    assertTrue(reader.isFileExist(emptyFile.getParent(), emptyFile.getName()));
+    List<PropertySource<Object>> properties = reader.readProperties(emptyFile.getParent(), emptyFile.getName());
+    assertTrue(properties.isEmpty());
+}
+
+
 }

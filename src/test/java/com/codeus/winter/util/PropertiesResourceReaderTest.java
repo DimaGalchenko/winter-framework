@@ -1,5 +1,6 @@
 package com.codeus.winter.util;
 
+import com.codeus.winter.exception.PropertySourceException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -12,6 +13,7 @@ import java.util.Properties;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class PropertiesResourceReaderTest {
 
@@ -52,4 +54,24 @@ class PropertiesResourceReaderTest {
         assertEquals("key2", property2.getName());
         assertEquals("value2", property2.getSource());
     }
+
+    @Test
+    void testReadPropertiesException() {
+        assertThrows(PropertySourceException.class,
+                () -> reader.readProperties(tempFile.getParent(), "nonexistent.properties"));
+    }
+
+    @Test
+    void testReadPropertiesEmptyFile() throws IOException {
+        // We create an empty file `empty.properties`
+        File emptyFile = new File(tempFile.getParent(), "empty.properties");
+        if (!emptyFile.exists()) {
+            emptyFile.createNewFile();
+        }
+
+        assertTrue(reader.isFileExist(emptyFile.getParent(), emptyFile.getName()));
+        List<PropertySource<String>> properties = reader.readProperties(emptyFile.getParent(), emptyFile.getName());
+        assertTrue(properties.isEmpty());
+    }
+
 }
