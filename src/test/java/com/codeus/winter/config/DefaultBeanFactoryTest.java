@@ -51,6 +51,7 @@ class DefaultBeanFactoryTest {
         DefaultBeanFactory factory = new DefaultBeanFactory(
                 Map.of("BeanA", beanDefinitionA)
         );
+        factory.initializeBeans();
 
         BeanA beanA = factory.getBean(BeanA.class);
         assertNotNull(beanA);
@@ -64,6 +65,7 @@ class DefaultBeanFactoryTest {
                 Map.of("BeanA", beanDefinitionA,
                         "BeanB", beanDefinitionB)
         );
+        factory.initializeBeans();
 
         BeanA beanA = factory.getBean(BeanA.class);
         assertNotNull(beanA);
@@ -82,6 +84,7 @@ class DefaultBeanFactoryTest {
         beanDefinitionMap.put("BeanA", beanDefinitionA);
 
         DefaultBeanFactory factory = new DefaultBeanFactory(beanDefinitionMap);
+        factory.initializeBeans();
 
         BeanA beanA = factory.getBean(BeanA.class);
         assertNotNull(beanA);
@@ -100,6 +103,7 @@ class DefaultBeanFactoryTest {
         beanDefinitionMap.put("BeanA", beanDefinitionA);
 
         DefaultBeanFactory factory = new DefaultBeanFactory(beanDefinitionMap);
+        factory.initializeBeans();
 
         BeanA beanA = factory.getBean(BeanA.class);
         assertNotNull(beanA);
@@ -125,9 +129,10 @@ class DefaultBeanFactoryTest {
         beanDefinitionMap.put("BeanA", beanDefinitionA);
         when(beanDefinitionB.getDependsOn()).thenReturn(new String[]{"BeanA", "BeanC"});
 
-        BeanFactoryException beanFactoryException = assertThrows(BeanFactoryException.class, () ->
-                new DefaultBeanFactory(beanDefinitionMap)
-        );
+        BeanFactoryException beanFactoryException = assertThrows(BeanFactoryException.class, () -> {
+            DefaultBeanFactory factory = new DefaultBeanFactory(beanDefinitionMap);
+            factory.initializeBeans();
+        });
 
         assertEquals("Dependency not found for bean: BeanC", beanFactoryException.getMessage());
     }
@@ -139,9 +144,10 @@ class DefaultBeanFactoryTest {
         beanDefinitionMap.put("BeanA", beanDefinitionA);
         when(beanDefinitionA.getBeanClassName()).thenReturn(null);
 
-        BeanFactoryException beanFactoryException = assertThrows(BeanFactoryException.class, () ->
-                new DefaultBeanFactory(beanDefinitionMap)
-        );
+        BeanFactoryException beanFactoryException = assertThrows(BeanFactoryException.class, () -> {
+            DefaultBeanFactory factory = new DefaultBeanFactory(beanDefinitionMap);
+            factory.initializeBeans();
+        });
 
         assertEquals("Bean class name is not set for bean: BeanA", beanFactoryException.getMessage());
     }
@@ -149,9 +155,10 @@ class DefaultBeanFactoryTest {
     @Test
     @DisplayName("Should get bean object by bean name")
     void testGetBeanByBeanName() {
-        BeanFactory factory = new DefaultBeanFactory(
+        DefaultBeanFactory factory = new DefaultBeanFactory(
                 Map.of("BeanA", beanDefinitionA)
         );
+        factory.initializeBeans();
 
         Object actual = factory.getBean("BeanA");
         assertNotNull(actual);
@@ -161,7 +168,8 @@ class DefaultBeanFactoryTest {
     @Test
     @DisplayName("Should throw exception when try to get by bean name but factory does not contain bean")
     void testGetBeanThrowExceptionWhenBeanIsNull() {
-        BeanFactory factory = new DefaultBeanFactory(new HashMap<>());
+        DefaultBeanFactory factory = new DefaultBeanFactory(new HashMap<>());
+        factory.initializeBeans();
 
         BeanNotFoundException exception = assertThrows(BeanNotFoundException.class,
                 () -> factory.getBean("BeanA"));
@@ -171,9 +179,10 @@ class DefaultBeanFactoryTest {
     @Test
     @DisplayName("Should get bean object by bean name and typeToken")
     void testGetBeanByBeanNameAndType() {
-        BeanFactory factory = new DefaultBeanFactory(
+        DefaultBeanFactory factory = new DefaultBeanFactory(
                 Map.of("BeanA", beanDefinitionA)
         );
+        factory.initializeBeans();
 
         BeanA actual = factory.getBean("BeanA", BeanA.class);
         assertNotNull(actual);
@@ -183,9 +192,10 @@ class DefaultBeanFactoryTest {
     @DisplayName("Should throw exception when try to get by bean name and bean type but factory does not contain bean")
     void testGetBeanByNameAndTypeThrowExceptionWhenBeanIsNull() {
         String beanName = "BeanA";
-        BeanFactory factory = new DefaultBeanFactory(
+        DefaultBeanFactory factory = new DefaultBeanFactory(
                 Map.of(beanName, beanDefinitionA)
         );
+        factory.initializeBeans();
 
         BeanNotFoundException exception = assertThrows(BeanNotFoundException.class,
                 () -> factory.getBean("beanName", BeanB.class));
@@ -197,9 +207,10 @@ class DefaultBeanFactoryTest {
     @DisplayName("Should throw exception when try to get by bean name and bean type but bean has another type")
     void testGetBeanByNameAndTypeThrowExceptionWhenBeanHasDifferentType() {
         String beanName = "BeanA";
-        BeanFactory factory = new DefaultBeanFactory(
+        DefaultBeanFactory factory = new DefaultBeanFactory(
                 Map.of(beanName, beanDefinitionA)
         );
+        factory.initializeBeans();
 
         BeanNotFoundException exception = assertThrows(BeanNotFoundException.class,
                 () -> factory.getBean(beanName, BeanB.class));
@@ -214,9 +225,10 @@ class DefaultBeanFactoryTest {
     @Test
     @DisplayName("Should get bean object by bean type")
     void testGetBeanByBeanType() {
-        BeanFactory factory = new DefaultBeanFactory(
+        DefaultBeanFactory factory = new DefaultBeanFactory(
                 Map.of("BeanA", beanDefinitionA)
         );
+        factory.initializeBeans();
 
         Object actual = factory.getBean(BeanA.class);
         assertNotNull(actual);
@@ -226,7 +238,8 @@ class DefaultBeanFactoryTest {
     @Test
     @DisplayName("Should throw exception when try to get by bean type but factory does not contain bean")
     void testGetBeanByTypeThrowExceptionWhenBeanIsNull() {
-        BeanFactory factory = new DefaultBeanFactory(new HashMap<>());
+        DefaultBeanFactory factory = new DefaultBeanFactory(new HashMap<>());
+        factory.initializeBeans();
 
         BeanNotFoundException exception = assertThrows(BeanNotFoundException.class, () -> factory.getBean(BeanA.class));
         assertEquals("Bean not found for type: " + BeanA.class.getName(), exception.getMessage());
@@ -237,7 +250,7 @@ class DefaultBeanFactoryTest {
     void testRegisterSingletonBean() {
         Map<String, BeanDefinition> beanDefinitions = spy(Map.class);
 
-        BeanFactory beanFactory = new DefaultBeanFactory(beanDefinitions);
+        DefaultBeanFactory beanFactory = new DefaultBeanFactory(beanDefinitions);
         String beanName = "BeanA";
         beanFactory.registerBean(beanName, beanDefinitionA, new BeanA());
 
@@ -264,9 +277,10 @@ class DefaultBeanFactoryTest {
     @Test
     @DisplayName("Should create bean should throw exception when bean is not unique")
     void testCreateBeanShouldThrowExceptionWhenBeanIsNotUnique() {
-        BeanFactory beanFactory = new DefaultBeanFactory(Map.of(
+        DefaultBeanFactory beanFactory = new DefaultBeanFactory(Map.of(
                 "BeanA", beanDefinitionA
         ));
+        beanFactory.initializeBeans();
 
         NotUniqueBeanDefinitionException exception = assertThrows(NotUniqueBeanDefinitionException.class,
                 () -> beanFactory.createBean(BeanA.class)
@@ -275,5 +289,41 @@ class DefaultBeanFactoryTest {
         assertEquals(String.format("Bean with type '%s' already exists", BeanA.class.getName()),
                 exception.getMessage()
         );
+    }
+
+    @Test
+    @DisplayName("Should apply bean post processors before initialization")
+    void testApplyBeanPostProcessorsBeforeInitialization() {
+        DefaultBeanFactory beanFactory = new DefaultBeanFactory(Map.of(
+                "BeanA", beanDefinitionA
+        ));
+        BeanPostProcessor beanPostProcessor = spy(BeanPostProcessor.class);
+        BeanA beanAfterPostProcessing = new BeanA();
+        when(beanPostProcessor.postProcessBeforeInitialization(any(), anyString())).thenReturn(beanAfterPostProcessing);
+        beanFactory.addBeanPostProcessor(beanPostProcessor);
+        beanFactory.initializeBeans();
+
+        verify(beanPostProcessor, times(1)).postProcessBeforeInitialization(any(), anyString());
+        BeanA beanA = beanFactory.getBean(BeanA.class);
+        assertNotNull(beanA);
+        assertEquals(beanAfterPostProcessing, beanA);
+    }
+
+    @Test
+    @DisplayName("Should apply bean post processors after initialization")
+    void testApplyBeanPostProcessorsAfterInitialization() {
+        DefaultBeanFactory beanFactory = new DefaultBeanFactory(Map.of(
+                "BeanA", beanDefinitionA
+        ));
+        BeanPostProcessor beanPostProcessor = spy(BeanPostProcessor.class);
+        BeanA beanAfterPostProcessing = new BeanA();
+        when(beanPostProcessor.postProcessAfterInitialization(any(), anyString())).thenReturn(beanAfterPostProcessing);
+        beanFactory.addBeanPostProcessor(beanPostProcessor);
+        beanFactory.initializeBeans();
+
+        verify(beanPostProcessor, times(1)).postProcessAfterInitialization(any(), anyString());
+        BeanA beanA = beanFactory.getBean(BeanA.class);
+        assertNotNull(beanA);
+        assertEquals(beanAfterPostProcessing, beanA);
     }
 }
