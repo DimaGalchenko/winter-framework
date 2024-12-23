@@ -41,7 +41,7 @@ class DefaultBeanFactoryTest {
         when(beanDefinitionB.getDependsOn()).thenReturn(new String[]{"BeanA"});
 
         when(beanDefinitionC.getBeanClassName()).thenReturn("com.codeus.winter.test.BeanC");
-        when(beanDefinitionB.isSingleton()).thenReturn(true);
+        when(beanDefinitionC.isSingleton()).thenReturn(true);
         when(beanDefinitionC.getDependsOn()).thenReturn(new String[]{"BeanA", "BeanB"});
     }
 
@@ -128,11 +128,9 @@ class DefaultBeanFactoryTest {
         beanDefinitionMap.put("BeanB", beanDefinitionB);
         beanDefinitionMap.put("BeanA", beanDefinitionA);
         when(beanDefinitionB.getDependsOn()).thenReturn(new String[]{"BeanA", "BeanC"});
+        DefaultBeanFactory factory = new DefaultBeanFactory(beanDefinitionMap);
 
-        BeanFactoryException beanFactoryException = assertThrows(BeanFactoryException.class, () -> {
-            DefaultBeanFactory factory = new DefaultBeanFactory(beanDefinitionMap);
-            factory.initializeBeans();
-        });
+        BeanFactoryException beanFactoryException = assertThrows(BeanFactoryException.class, factory::initializeBeans);
 
         assertEquals("Dependency not found for bean: BeanC", beanFactoryException.getMessage());
     }
@@ -143,11 +141,8 @@ class DefaultBeanFactoryTest {
         Map<String, BeanDefinition> beanDefinitionMap = new LinkedHashMap<>();
         beanDefinitionMap.put("BeanA", beanDefinitionA);
         when(beanDefinitionA.getBeanClassName()).thenReturn(null);
-
-        BeanFactoryException beanFactoryException = assertThrows(BeanFactoryException.class, () -> {
-            DefaultBeanFactory factory = new DefaultBeanFactory(beanDefinitionMap);
-            factory.initializeBeans();
-        });
+        DefaultBeanFactory factory = new DefaultBeanFactory(beanDefinitionMap);
+        BeanFactoryException beanFactoryException = assertThrows(BeanFactoryException.class, factory::initializeBeans);
 
         assertEquals("Bean class name is not set for bean: BeanA", beanFactoryException.getMessage());
     }
