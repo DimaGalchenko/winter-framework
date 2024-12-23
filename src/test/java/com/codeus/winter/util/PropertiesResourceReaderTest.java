@@ -11,9 +11,9 @@ import java.util.List;
 import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PropertiesResourceReaderTest {
 
@@ -65,9 +65,7 @@ class PropertiesResourceReaderTest {
     void testReadPropertiesEmptyFile() throws IOException {
         // We create an empty file `empty.properties`
         File emptyFile = new File(tempFile.getParent(), "empty.properties");
-        if (!emptyFile.exists()) {
-            emptyFile.createNewFile();
-        }
+        emptyFile.createNewFile();
 
         assertTrue(reader.isFileExist(emptyFile.getParent(), emptyFile.getName()));
         List<PropertySource<String>> properties = reader.readProperties(emptyFile.getParent(), emptyFile.getName());

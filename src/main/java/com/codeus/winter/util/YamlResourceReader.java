@@ -20,21 +20,23 @@ public class YamlResourceReader implements ResourceReader<Object> {
     }
 
     @Override
-public List<PropertySource<Object>> readProperties(String filePath, String fileName) {
-    List<PropertySource<Object>> propertySources = new ArrayList<>();
-    try (InputStream input = new FileInputStream(new File(filePath, fileName))) {
-        Yaml yaml = new Yaml();
-        Map<String, Object> properties = yaml.load(input);
-        if (properties != null) {
-            for (Map.Entry<String, Object> entry : properties.entrySet()) {
-                propertySources.add(new SimplePropertySource(entry.getKey(), entry.getValue()));
+    public List<PropertySource<Object>> readProperties(String filePath, String fileName) {
+        List<PropertySource<Object>> propertySources = new ArrayList<>();
+
+        try (InputStream input = new FileInputStream(new File(filePath, fileName))) {
+            Yaml yaml = new Yaml();
+            Map<String, Object> properties = yaml.load(input);
+            if (properties != null) {
+                for (Map.Entry<String, Object> entry : properties.entrySet()) {
+                    propertySources.add(new SimplePropertySource(entry.getKey(), entry.getValue()));
+                }
             }
+        } catch (IOException e) {
+            throw new PropertySourceException(e.getMessage());
         }
-    } catch (IOException e) {
-        throw new PropertySourceException(e.getMessage());
+
+        return propertySources;
     }
-    return propertySources;
-}
 
     private static class SimplePropertySource extends PropertySource<Object> {
         private final Object value;

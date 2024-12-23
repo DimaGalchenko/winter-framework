@@ -21,6 +21,7 @@ public class PropertiesResourceReader implements ResourceReader<String> {
     @Override
     public List<PropertySource<String>> readProperties(String filePath, String fileName) {
         List<PropertySource<String>> propertySources = new ArrayList<>();
+
         try (InputStream input = new FileInputStream(new File(filePath, fileName))) {
             Properties properties = new Properties();
             properties.load(input);
@@ -30,6 +31,7 @@ public class PropertiesResourceReader implements ResourceReader<String> {
         } catch (IOException e) {
             throw new PropertySourceException(e.getMessage());
         }
+
         return propertySources;
     }
 
