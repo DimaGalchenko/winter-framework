@@ -15,9 +15,9 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class YamlResourceReaderTest {
 
@@ -63,23 +63,20 @@ class YamlResourceReaderTest {
     }
 
     @Test
-    void testReadPropertiesException() {
+    void testReadPropertiesThrowsExceptionIfFileDoesNotExist() {
         assertThrows(PropertySourceException.class,
                 () -> reader.readProperties(tempFile.getParent(), "nonexistent.yaml"));
     }
 
     @Test
-void testReadPropertiesEmptyFile() throws IOException {
-    // We create an empty "empty.yaml" file
-    File emptyFile = new File(tempFile.getParent(), "empty.yaml");
-    if (!emptyFile.exists()) {
-        emptyFile.createNewFile();
-    }
+    void testReadPropertiesEmptyFile() throws IOException {
+        // We create an empty "empty.yaml" file
+        File emptyFile = new File(tempFile.getParent(), "empty.yaml");
 
-    assertTrue(reader.isFileExist(emptyFile.getParent(), emptyFile.getName()));
-    List<PropertySource<Object>> properties = reader.readProperties(emptyFile.getParent(), emptyFile.getName());
-    assertTrue(properties.isEmpty());
-}
+        assertTrue(reader.isFileExist(emptyFile.getParent(), emptyFile.getName()));
+        List<PropertySource<Object>> properties = reader.readProperties(emptyFile.getParent(), emptyFile.getName());
+        assertTrue(properties.isEmpty());
+    }
 
 
 }
