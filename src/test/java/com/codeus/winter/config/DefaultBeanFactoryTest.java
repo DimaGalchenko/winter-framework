@@ -1,23 +1,9 @@
 package com.codeus.winter.config;
 
-import com.codeus.winter.exception.BeanFactoryException;
-import com.codeus.winter.exception.BeanNotFoundException;
-import com.codeus.winter.exception.NotUniqueBeanDefinitionException;
-import com.codeus.winter.test.BeanA;
-import com.codeus.winter.test.BeanB;
-import com.codeus.winter.test.BeanC;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -26,10 +12,28 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.codeus.winter.exception.BeanFactoryException;
+import com.codeus.winter.exception.BeanNotFoundException;
+import com.codeus.winter.exception.NotUniqueBeanDefinitionException;
+import com.codeus.winter.test.BeanA;
+import com.codeus.winter.test.BeanB;
+import com.codeus.winter.test.BeanC;
+import com.codeus.winter.test.BeanD;
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
 class DefaultBeanFactoryTest {
     private final BeanDefinition beanDefinitionA = mock(BeanDefinition.class);
     private final BeanDefinition beanDefinitionB = mock(BeanDefinition.class);
     private final BeanDefinition beanDefinitionC = mock(BeanDefinition.class);
+    private final BeanDefinition beanDefinitionD = mock(BeanDefinition.class);
 
     @BeforeEach
     void setUpBeforeEach() {
@@ -42,7 +46,10 @@ class DefaultBeanFactoryTest {
 
         when(beanDefinitionC.getBeanClassName()).thenReturn("com.codeus.winter.test.BeanC");
         when(beanDefinitionB.isSingleton()).thenReturn(true);
-        when(beanDefinitionC.getDependsOn()).thenReturn(new String[]{"BeanA", "BeanB"});
+        when(beanDefinitionC.getDependsOn()).thenReturn(new String[]{"BeanA", "BeanB", "BeanD"});
+
+        when(beanDefinitionD.getBeanClassName()).thenReturn("com.codeus.winter.test.BeanD");
+        when(beanDefinitionD.isSingleton()).thenReturn(true);
     }
 
     @Test
@@ -98,6 +105,7 @@ class DefaultBeanFactoryTest {
         beanDefinitionMap.put("BeanC", beanDefinitionC);
         beanDefinitionMap.put("BeanB", beanDefinitionB);
         beanDefinitionMap.put("BeanA", beanDefinitionA);
+        beanDefinitionMap.put("BeanD", beanDefinitionD);
 
         DefaultBeanFactory factory = new DefaultBeanFactory(beanDefinitionMap);
 
@@ -115,6 +123,20 @@ class DefaultBeanFactoryTest {
         assertEquals(beanA, beanB.getBeanA());
         assertEquals(beanA, beanC.getBeanA());
         assertEquals(beanB, beanC.getBeanB());
+        BeanD beanD = factory.getBean(BeanD.class);
+        assertNotNull(beanD);
+        // List
+        List<BeanD> list = beanC.getList();
+        assertNotNull(beanC.getList());
+        assertEquals(BeanD.class, list.getFirst().getClass());
+        // Set
+        Set<BeanD> set = beanC.getSet();
+        assertNotNull(set);
+        assertTrue(set.contains(beanD));
+        // Map
+        Map<String, BeanD> map = beanC.getMap();
+        assertNotNull(map);
+        assertEquals(beanD, map.get(beanD.getClass().getName()));
     }
 
     @Test

@@ -5,14 +5,17 @@ import com.codeus.winter.exception.BeanNotFoundException;
 import com.codeus.winter.exception.NotUniqueBeanDefinitionException;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Default implementation of the {@link BeanFactory} interface.
@@ -224,10 +227,7 @@ public class DefaultBeanFactory implements BeanFactory {
 
             for (int i = 0; i < parameterTypes.length; i++) {
                 Class<?> dependencyClass = parameterTypes[i];
-                Object dependency = singletonBeans.values().stream()
-                        .filter(dependencyClass::isInstance)
-                        .findFirst()
-                        .orElse(null);
+                Object dependency = getBeanDependency(dependencyClass, beanClass);
                 if (dependency == null) {
                     canResolve = false;
                     break;
@@ -244,5 +244,61 @@ public class DefaultBeanFactory implements BeanFactory {
             }
         }
         throw new BeanFactoryException("Unable to resolve dependencies for class: " + beanClass.getName());
+    }
+
+    private Object getBeanDependency(Class<?> dependencyClass, Class<?> beanClass) {
+        Object dependency;
+        if (dependencyClass.isAssignableFrom(List.class)) {
+            dependency = getListDependency(beanClass);
+        } else if (dependencyClass.isAssignableFrom(Set.class)) {
+            dependency = getSetDependency(beanClass);
+        } else if (dependencyClass.isAssignableFrom(Map.class)) {
+            dependency = getMapDependency(beanClass);
+        } else {
+            dependency = singletonBeans.values().stream()
+                .filter(dependencyClass::isInstance)
+                .findFirst()
+                .orElse(null);
+        }
+        return dependency;
+    }
+
+    private Object getListDependency(Class<?> beanClass) {
+        Class<?> type = getType(beanClass, List.class, 0);
+        if (type == null) {
+            return null;
+        }
+        return singletonBeans.values().stream()
+            .filter(bean -> bean.getClass().isAssignableFrom(type))
+            .toList();
+    }
+
+    private Object getSetDependency(Class<?> beanClass) {
+        Class<?> type = getType(beanClass, Set.class, 0);
+        if (type == null) {
+            return null;
+        }
+        return singletonBeans.values().stream()
+            .filter(bean -> bean.getClass().isAssignableFrom(type))
+            .collect(Collectors.toSet());
+    }
+
+    private static Class<?> getType(Class<?> beanClass, Class<?> collectionType, int orderNumber) {
+        return Arrays.stream(beanClass.getDeclaredFields())
+            .filter(field -> collectionType.equals(field.getType()))
+            .map(field -> (ParameterizedType) field.getGenericType())
+            .map(type -> (Class<?>) type.getActualTypeArguments()[orderNumber])
+            .findFirst()
+            .orElse(null);
+    }
+
+    private Object getMapDependency(Class<?> beanClass) {
+        Class<?> type = getType(beanClass, Map.class, 1);
+        if (type == null) {
+            return null;
+        }
+        return singletonBeans.values().stream()
+            .filter(bean -> bean.getClass().isAssignableFrom(type))
+            .collect(Collectors.toMap(bean -> bean.getClass().getName(), bean -> bean));
     }
 }
