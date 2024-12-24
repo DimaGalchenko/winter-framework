@@ -285,7 +285,7 @@ public class DefaultBeanFactory implements BeanFactory {
         Object result = postProcessorFunction.apply(bean, beanName);
         if (result == null) {
             throw new BeanFactoryException(String.format(
-                    "PostProcessor returned null for bean: %s during postProcessAfterInitialization", beanName));
+                    "PostProcessor returned null for bean: %s during post processing", beanName));
         }
         return result;
     }
