@@ -7,11 +7,11 @@ import java.util.Set;
 public class BeanC {
     private BeanA beanA;
     private BeanB beanB;
-    private List<BeanD> list;
-    private Set<BeanD> set;
-    private Map<String, BeanD> map;
+    private List<Common> list;
+    private Set<Common> set;
+    private Map<String, Common> map;
 
-    public BeanC(BeanA beanA, BeanB beanB, List<BeanD> list, Set<BeanD> set, Map<String, BeanD> map) {
+    public BeanC(BeanA beanA, BeanB beanB, List<Common> list, Set<Common> set, Map<String, Common> map) {
         this.beanA = beanA;
         this.beanB = beanB;
         this.list = list;
@@ -27,15 +27,15 @@ public class BeanC {
         return beanB;
     }
 
-    public List<BeanD> getList() {
+    public List<Common> getList() {
         return list;
     }
 
-    public Set<BeanD> getSet() {
+    public Set<Common> getSet() {
         return set;
     }
 
-    public Map<String, BeanD> getMap() {
+    public Map<String, Common> getMap() {
         return map;
     }
 }

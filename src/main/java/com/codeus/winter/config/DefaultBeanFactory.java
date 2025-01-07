@@ -269,7 +269,8 @@ public class DefaultBeanFactory implements BeanFactory {
             return null;
         }
         return singletonBeans.values().stream()
-            .filter(bean -> bean.getClass().isAssignableFrom(type))
+            .filter(bean -> Arrays.stream(bean.getClass().getInterfaces())
+                    .anyMatch(interfaceClass -> interfaceClass.isAssignableFrom(type)))
             .toList();
     }
 
@@ -279,7 +280,8 @@ public class DefaultBeanFactory implements BeanFactory {
             return null;
         }
         return singletonBeans.values().stream()
-            .filter(bean -> bean.getClass().isAssignableFrom(type))
+            .filter(bean -> Arrays.stream(bean.getClass().getInterfaces())
+                .anyMatch(interfaceClass -> interfaceClass.isAssignableFrom(type)))
             .collect(Collectors.toSet());
     }
 
@@ -298,7 +300,8 @@ public class DefaultBeanFactory implements BeanFactory {
             return null;
         }
         return singletonBeans.values().stream()
-            .filter(bean -> bean.getClass().isAssignableFrom(type))
+            .filter(bean -> Arrays.stream(bean.getClass().getInterfaces())
+                .anyMatch(interfaceClass -> interfaceClass.isAssignableFrom(type)))
             .collect(Collectors.toMap(bean -> bean.getClass().getName(), bean -> bean));
     }
 }

@@ -1,6 +1,6 @@
 package com.codeus.winter.test;
 
-public class BeanD {
+public class BeanD implements Common {
     public BeanD() {
     }
 }
