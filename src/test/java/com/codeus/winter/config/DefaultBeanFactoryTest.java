@@ -300,14 +300,16 @@ class DefaultBeanFactoryTest {
 
         DefaultBeanFactory factory = new DefaultBeanFactory(beanDefinitionMap);
 
+        BeanA beanA = factory.getBean(BeanA.class);
+        assertNotNull(beanA);
         BeanD beanD = factory.getBean(BeanD.class);
         assertNotNull(beanD);
         BeanE beanE = factory.getBean(BeanE.class);
         assertNotNull(beanE);
         List<Common> list = beanD.getList();
         assertNotNull(beanD.getList());
-        assertEquals(BeanA.class, list.getFirst().getClass());
-        assertEquals(BeanE.class, list.get(1).getClass());
+        assertEquals(beanA, list.getFirst());
+        assertEquals(beanE, list.get(1));
     }
 
     @Test

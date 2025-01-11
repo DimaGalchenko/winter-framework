@@ -250,23 +250,27 @@ public class DefaultBeanFactory implements BeanFactory {
 
     private Object getBeanDependency(Type dependencyType) {
         Object dependency;
-        if (dependencyType instanceof ParameterizedType
-            && ((ParameterizedType) dependencyType).getRawType().equals(List.class)) {
+        Type rawType = getRawType(dependencyType);
+        if (rawType.equals(List.class)) {
             dependency = getCollectionDependency(dependencyType, 0).toList();
-        } else if (dependencyType instanceof ParameterizedType
-            && ((ParameterizedType) dependencyType).getRawType().equals(Set.class)) {
+        } else if (rawType.equals(Set.class)) {
             dependency = getCollectionDependency(dependencyType, 0).collect(Collectors.toSet());
-        } else if (dependencyType instanceof ParameterizedType
-            && ((ParameterizedType) dependencyType).getRawType().equals(Map.class)) {
+        } else if (rawType.equals(Map.class)) {
             dependency = getCollectionDependency(dependencyType, 1)
                 .collect(Collectors.toMap(bean -> bean.getClass().getName(), bean -> bean));
         } else {
             dependency = singletonBeans.values().stream()
-                .filter(bean -> bean.getClass().getTypeName().equals(dependencyType.getTypeName()))
+                .filter(bean -> bean.getClass().equals(rawType))
                 .findFirst()
                 .orElse(null);
         }
         return dependency;
+    }
+
+    private Type getRawType(Type dependencyType) {
+        return dependencyType instanceof ParameterizedType
+            ? ((ParameterizedType) dependencyType).getRawType()
+            : dependencyType;
     }
 
     private Stream<Object> getCollectionDependency(Type parameterType, int valueTypeIndex) {
