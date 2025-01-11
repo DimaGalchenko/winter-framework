@@ -48,8 +48,8 @@ class DefaultBeanFactoryTest {
         when(beanDefinitionB.getDependsOn()).thenReturn(new String[]{"BeanA"});
 
         when(beanDefinitionC.getBeanClassName()).thenReturn("com.codeus.winter.test.BeanC");
-        when(beanDefinitionB.isSingleton()).thenReturn(true);
-        when(beanDefinitionC.getDependsOn()).thenReturn(new String[]{"BeanA", "BeanB", "BeanD"});
+        when(beanDefinitionC.isSingleton()).thenReturn(true);
+        when(beanDefinitionC.getDependsOn()).thenReturn(new String[]{"BeanA", "BeanB"});
 
         when(beanDefinitionD.getBeanClassName()).thenReturn("com.codeus.winter.test.BeanD");
         when(beanDefinitionD.isSingleton()).thenReturn(true);
@@ -108,7 +108,6 @@ class DefaultBeanFactoryTest {
     @DisplayName("Should initialize three beans with dependencies")
     void testInitializeManyBeansWithDependencyInReverseOrder() {
         Map<String, BeanDefinition> beanDefinitionMap = new LinkedHashMap<>();
-        beanDefinitionMap.put("BeanD", beanDefinitionD);
         beanDefinitionMap.put("BeanC", beanDefinitionC);
         beanDefinitionMap.put("BeanB", beanDefinitionB);
         beanDefinitionMap.put("BeanA", beanDefinitionA);
@@ -295,47 +294,41 @@ class DefaultBeanFactoryTest {
     @DisplayName("Should inject list of beans")
     void testInjectionListOfBeans() {
         Map<String, BeanDefinition> beanDefinitionMap = new LinkedHashMap<>();
-        beanDefinitionMap.put("BeanB", beanDefinitionB);
         beanDefinitionMap.put("BeanA", beanDefinitionA);
-        beanDefinitionMap.put("BeanC", beanDefinitionC);
-        beanDefinitionMap.put("BeanD", beanDefinitionD);
         beanDefinitionMap.put("BeanE", beanDefinitionE);
+        beanDefinitionMap.put("BeanD", beanDefinitionD);
 
         DefaultBeanFactory factory = new DefaultBeanFactory(beanDefinitionMap);
 
-        BeanC beanC = factory.getBean(BeanC.class);
-        assertNotNull(beanC);
         BeanD beanD = factory.getBean(BeanD.class);
         assertNotNull(beanD);
         BeanE beanE = factory.getBean(BeanE.class);
         assertNotNull(beanE);
-        List<Common> list = beanC.getList();
-        assertNotNull(beanC.getList());
-        assertEquals(BeanE.class, list.getFirst().getClass());
-        assertEquals(BeanD.class, list.get(1).getClass());
+        List<Common> list = beanD.getList();
+        assertNotNull(beanD.getList());
+        assertEquals(BeanA.class, list.getFirst().getClass());
+        assertEquals(BeanE.class, list.get(1).getClass());
     }
 
     @Test
     @DisplayName("Should inject Set of beans")
     void testInjectionSetOfBeans() {
         Map<String, BeanDefinition> beanDefinitionMap = new LinkedHashMap<>();
-        beanDefinitionMap.put("BeanC", beanDefinitionC);
-        beanDefinitionMap.put("BeanB", beanDefinitionB);
         beanDefinitionMap.put("BeanA", beanDefinitionA);
-        beanDefinitionMap.put("BeanD", beanDefinitionD);
         beanDefinitionMap.put("BeanE", beanDefinitionE);
+        beanDefinitionMap.put("BeanD", beanDefinitionD);
 
         DefaultBeanFactory factory = new DefaultBeanFactory(beanDefinitionMap);
 
-        BeanC beanC = factory.getBean(BeanC.class);
-        assertNotNull(beanC);
+        BeanA beanA = factory.getBean(BeanA.class);
+        assertNotNull(beanA);
         BeanD beanD = factory.getBean(BeanD.class);
         assertNotNull(beanD);
         BeanE beanE = factory.getBean(BeanE.class);
         assertNotNull(beanE);
-        Set<Common> set = beanC.getSet();
+        Set<Common> set = beanD.getSet();
         assertNotNull(set);
-        assertTrue(set.contains(beanD));
+        assertTrue(set.contains(beanA));
         assertTrue(set.contains(beanE));
     }
 
@@ -343,23 +336,21 @@ class DefaultBeanFactoryTest {
     @DisplayName("Should inject Map of beans")
     void testInjectionMapOfBeans() {
         Map<String, BeanDefinition> beanDefinitionMap = new LinkedHashMap<>();
-        beanDefinitionMap.put("BeanC", beanDefinitionC);
-        beanDefinitionMap.put("BeanB", beanDefinitionB);
         beanDefinitionMap.put("BeanA", beanDefinitionA);
-        beanDefinitionMap.put("BeanD", beanDefinitionD);
         beanDefinitionMap.put("BeanE", beanDefinitionE);
+        beanDefinitionMap.put("BeanD", beanDefinitionD);
 
         DefaultBeanFactory factory = new DefaultBeanFactory(beanDefinitionMap);
 
-        BeanC beanC = factory.getBean(BeanC.class);
-        assertNotNull(beanC);
+        BeanA beanA = factory.getBean(BeanA.class);
+        assertNotNull(beanA);
         BeanD beanD = factory.getBean(BeanD.class);
         assertNotNull(beanD);
         BeanE beanE = factory.getBean(BeanE.class);
         assertNotNull(beanE);
-        Map<String, Common> map = beanC.getMap();
+        Map<String, Common> map = beanD.getMap();
         assertNotNull(map);
-        assertEquals(beanD, map.get(beanD.getClass().getName()));
+        assertEquals(beanA, map.get(beanA.getClass().getName()));
         assertEquals(beanE, map.get(beanE.getClass().getName()));
     }
 }

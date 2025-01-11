@@ -8,6 +8,7 @@ import jakarta.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -16,6 +17,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Default implementation of the {@link BeanFactory} interface.
@@ -221,13 +223,13 @@ public class DefaultBeanFactory implements BeanFactory {
         Constructor<?>[] constructors = beanClass.getConstructors();
 
         for (Constructor<?> constructor : constructors) {
-            Class<?>[] parameterTypes = constructor.getParameterTypes();
+            Type[] parameterTypes = constructor.getGenericParameterTypes();
             Object[] resolvedDependencies = new Object[parameterTypes.length];
             boolean canResolve = true;
 
             for (int i = 0; i < parameterTypes.length; i++) {
-                Class<?> dependencyClass = parameterTypes[i];
-                Object dependency = getBeanDependency(dependencyClass, beanClass);
+                Type dependencyType = parameterTypes[i];
+                Object dependency = getBeanDependency(dependencyType);
                 if (dependency == null) {
                     canResolve = false;
                     break;
@@ -246,62 +248,32 @@ public class DefaultBeanFactory implements BeanFactory {
         throw new BeanFactoryException("Unable to resolve dependencies for class: " + beanClass.getName());
     }
 
-    private Object getBeanDependency(Class<?> dependencyClass, Class<?> beanClass) {
+    private Object getBeanDependency(Type dependencyType) {
         Object dependency;
-        if (dependencyClass.isAssignableFrom(List.class)) {
-            dependency = getListDependency(beanClass);
-        } else if (dependencyClass.isAssignableFrom(Set.class)) {
-            dependency = getSetDependency(beanClass);
-        } else if (dependencyClass.isAssignableFrom(Map.class)) {
-            dependency = getMapDependency(beanClass);
+        if (dependencyType instanceof ParameterizedType
+            && ((ParameterizedType) dependencyType).getRawType().equals(List.class)) {
+            dependency = getCollectionDependency(dependencyType, 0).toList();
+        } else if (dependencyType instanceof ParameterizedType
+            && ((ParameterizedType) dependencyType).getRawType().equals(Set.class)) {
+            dependency = getCollectionDependency(dependencyType, 0).collect(Collectors.toSet());
+        } else if (dependencyType instanceof ParameterizedType
+            && ((ParameterizedType) dependencyType).getRawType().equals(Map.class)) {
+            dependency = getCollectionDependency(dependencyType, 1)
+                .collect(Collectors.toMap(bean -> bean.getClass().getName(), bean -> bean));
         } else {
             dependency = singletonBeans.values().stream()
-                .filter(dependencyClass::isInstance)
+                .filter(bean -> bean.getClass().getTypeName().equals(dependencyType.getTypeName()))
                 .findFirst()
                 .orElse(null);
         }
         return dependency;
     }
 
-    private Object getListDependency(Class<?> beanClass) {
-        Class<?> type = getType(beanClass, List.class, 0);
-        if (type == null) {
-            return null;
-        }
+    private Stream<Object> getCollectionDependency(Type parameterType, int valueTypeIndex) {
+        Class<?> dependencyClass =
+            (Class<?>) ((ParameterizedType) parameterType).getActualTypeArguments()[valueTypeIndex];
         return singletonBeans.values().stream()
             .filter(bean -> Arrays.stream(bean.getClass().getInterfaces())
-                    .anyMatch(interfaceClass -> interfaceClass.isAssignableFrom(type)))
-            .toList();
-    }
-
-    private Object getSetDependency(Class<?> beanClass) {
-        Class<?> type = getType(beanClass, Set.class, 0);
-        if (type == null) {
-            return null;
-        }
-        return singletonBeans.values().stream()
-            .filter(bean -> Arrays.stream(bean.getClass().getInterfaces())
-                .anyMatch(interfaceClass -> interfaceClass.isAssignableFrom(type)))
-            .collect(Collectors.toSet());
-    }
-
-    private static Class<?> getType(Class<?> beanClass, Class<?> collectionType, int orderNumber) {
-        return Arrays.stream(beanClass.getDeclaredFields())
-            .filter(field -> collectionType.equals(field.getType()))
-            .map(field -> (ParameterizedType) field.getGenericType())
-            .map(type -> (Class<?>) type.getActualTypeArguments()[orderNumber])
-            .findFirst()
-            .orElse(null);
-    }
-
-    private Object getMapDependency(Class<?> beanClass) {
-        Class<?> type = getType(beanClass, Map.class, 1);
-        if (type == null) {
-            return null;
-        }
-        return singletonBeans.values().stream()
-            .filter(bean -> Arrays.stream(bean.getClass().getInterfaces())
-                .anyMatch(interfaceClass -> interfaceClass.isAssignableFrom(type)))
-            .collect(Collectors.toMap(bean -> bean.getClass().getName(), bean -> bean));
+                .anyMatch(interfaceClass -> interfaceClass.isAssignableFrom(dependencyClass)));
     }
 }
