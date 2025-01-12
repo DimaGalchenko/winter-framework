@@ -22,7 +22,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -249,8 +248,8 @@ class DefaultBeanFactoryTest {
         String beanName = "BeanA";
         beanFactory.registerBean(beanName, beanDefinitionA, new BeanA());
 
-        verify(beanDefinitions, times(1)).put(beanName, beanDefinitionA);
-        verify(beanDefinitions, times(1)).put(anyString(), any(BeanDefinition.class));
+        verify(beanDefinitions).put(beanName, beanDefinitionA);
+        verify(beanDefinitions).put(anyString(), any(BeanDefinition.class));
         BeanA beanA = beanFactory.getBean(beanName, BeanA.class);
         assertNotNull(beanA);
         assertEquals(BeanA.class, beanA.getClass());
@@ -298,7 +297,7 @@ class DefaultBeanFactoryTest {
         beanFactory.addBeanPostProcessor(beanPostProcessor);
         beanFactory.initializeBeans();
 
-        verify(beanPostProcessor, times(1)).postProcessBeforeInitialization(any(), anyString());
+        verify(beanPostProcessor).postProcessBeforeInitialization(any(), anyString());
         BeanA beanA = beanFactory.getBean(BeanA.class);
         assertNotNull(beanA);
         assertEquals(beanAfterPostProcessing, beanA);
@@ -316,7 +315,7 @@ class DefaultBeanFactoryTest {
         beanFactory.addBeanPostProcessor(beanPostProcessor);
         beanFactory.initializeBeans();
 
-        verify(beanPostProcessor, times(1)).postProcessAfterInitialization(any(), anyString());
+        verify(beanPostProcessor).postProcessAfterInitialization(any(), anyString());
         BeanA beanA = beanFactory.getBean(BeanA.class);
         assertNotNull(beanA);
         assertEquals(beanAfterPostProcessing, beanA);
