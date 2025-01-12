@@ -20,7 +20,6 @@ import java.util.function.BiFunction;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.function.BiFunction;
 
 /**
  * Default implementation of the {@link BeanFactory} interface.
