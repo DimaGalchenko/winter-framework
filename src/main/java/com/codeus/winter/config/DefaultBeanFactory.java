@@ -48,7 +48,7 @@ public class DefaultBeanFactory implements BeanFactory {
     @Override
     public void registerBeanDefinition(@Nonnull final String name, @Nonnull final BeanDefinition beanDefinition) {
         if (beanDefinitions.containsKey(name)) {
-            throw new IllegalArgumentException(String.format("A bean with name '%s' is already defined.", name));
+            throw new BeanFactoryException(String.format("A bean with name '%s' is already defined.", name));
         }
         beanDefinitions.put(name, beanDefinition);
     }

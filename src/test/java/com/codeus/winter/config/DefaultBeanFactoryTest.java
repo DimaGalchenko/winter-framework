@@ -11,6 +11,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.codeus.winter.config.impl.BeanDefinitionImpl;
 import com.codeus.winter.exception.BeanFactoryException;
 import com.codeus.winter.exception.BeanNotFoundException;
 import com.codeus.winter.exception.NotUniqueBeanDefinitionException;
@@ -37,6 +38,8 @@ class DefaultBeanFactoryTest {
     private final BeanDefinition beanDefinitionC = mock(BeanDefinition.class);
     private final BeanDefinition beanDefinitionD = mock(BeanDefinition.class);
     private final BeanDefinition beanDefinitionE = mock(BeanDefinition.class);
+    private final BeanDefinition cycleBeanDefinitionOne = mock(BeanDefinition.class);
+    private final BeanDefinition cycleBeanDefinitionTwo = mock(BeanDefinition.class);
 
     @BeforeEach
     void setUpBeforeEach() {
@@ -56,6 +59,12 @@ class DefaultBeanFactoryTest {
 
         when(beanDefinitionE.getBeanClassName()).thenReturn("com.codeus.winter.test.BeanE");
         when(beanDefinitionE.isSingleton()).thenReturn(true);
+
+        when(cycleBeanDefinitionOne.getBeanClassName()).thenReturn("com.codeus.winter.test.CyclicBean.BeanOne");
+        when(cycleBeanDefinitionOne.isSingleton()).thenReturn(true);
+
+        when(cycleBeanDefinitionTwo.getBeanClassName()).thenReturn("com.codeus.winter.test.CyclicBean.BeanTwo");
+        when(cycleBeanDefinitionTwo.isSingleton()).thenReturn(true);
     }
 
     @Test
@@ -146,6 +155,21 @@ class DefaultBeanFactoryTest {
         BeanFactoryException beanFactoryException = assertThrows(BeanFactoryException.class, factory::initializeBeans);
 
         assertEquals("Dependency not found for bean: BeanC", beanFactoryException.getMessage());
+    }
+
+    @Test
+    @DisplayName("Should throw exception when factory can't resolve dependency")
+    void testThrowExceptionWhenBeanFactoryCantResolvePendingDependencies() {
+        Map<String, BeanDefinition> beanDefinitionMap = new LinkedHashMap<>();
+        beanDefinitionMap.put("BeanOne", cycleBeanDefinitionOne);
+        beanDefinitionMap.put("BeanTwo", cycleBeanDefinitionTwo);
+        when(cycleBeanDefinitionOne.getDependsOn()).thenReturn(new String[]{"BeanTwo"});
+        when(cycleBeanDefinitionTwo.getDependsOn()).thenReturn(new String[]{"BeanOne"});
+        DefaultBeanFactory factory = new DefaultBeanFactory(beanDefinitionMap);
+
+        BeanFactoryException beanFactoryException = assertThrows(BeanFactoryException.class, factory::initializeBeans);
+
+        assertEquals("Unresolved dependencies for beans: [BeanOne, BeanTwo]", beanFactoryException.getMessage());
     }
 
     @Test
@@ -428,5 +452,33 @@ class DefaultBeanFactoryTest {
         assertNotNull(map);
         assertEquals(beanA, map.get(beanA.getClass().getName()));
         assertEquals(beanE, map.get(beanE.getClass().getName()));
+    }
+
+    @Test
+    @DisplayName("Should register bean definition")
+    void testShouldRegisterBeanDefinition() {
+        HashMap<String, BeanDefinition> beanDefinitionMap = spy(HashMap.class);
+        BeanFactory beanFactory = new DefaultBeanFactory(beanDefinitionMap);
+        String beanDefinitionName = "BeanDefinition";
+        BeanDefinition beanDefinition = new BeanDefinitionImpl();
+
+        beanFactory.registerBeanDefinition(beanDefinitionName, beanDefinition);
+
+        verify(beanDefinitionMap).put(beanDefinitionName, beanDefinition);
+    }
+
+    @Test
+    @DisplayName("Should throw exception when user register bean definition with same name")
+    void testShouldThrowExceptionWhenRegisterBeanDefinitionWithSameName() {
+        BeanFactory beanFactory = new DefaultBeanFactory();
+        String beanDefinitionName = "BeanDefinition";
+        BeanDefinition beanDefinition = new BeanDefinitionImpl();
+
+        beanFactory.registerBeanDefinition(beanDefinitionName, beanDefinition);
+        assertThrows(
+                BeanFactoryException.class,
+                () -> beanFactory.registerBeanDefinition(beanDefinitionName, beanDefinition)
+        );
+
     }
 }
