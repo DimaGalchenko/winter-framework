@@ -1,11 +1,26 @@
 package com.codeus.winter.config;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.codeus.winter.exception.BeanFactoryException;
 import com.codeus.winter.exception.BeanNotFoundException;
 import com.codeus.winter.exception.NotUniqueBeanDefinitionException;
 import com.codeus.winter.test.BeanA;
 import com.codeus.winter.test.BeanB;
 import com.codeus.winter.test.BeanC;
+import com.codeus.winter.test.BeanD;
+import com.codeus.winter.test.BeanE;
+import com.codeus.winter.test.Common;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,7 +28,9 @@ import org.junit.jupiter.api.Test;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -29,6 +46,8 @@ class DefaultBeanFactoryTest {
     private final BeanDefinition beanDefinitionA = mock(BeanDefinition.class);
     private final BeanDefinition beanDefinitionB = mock(BeanDefinition.class);
     private final BeanDefinition beanDefinitionC = mock(BeanDefinition.class);
+    private final BeanDefinition beanDefinitionD = mock(BeanDefinition.class);
+    private final BeanDefinition beanDefinitionE = mock(BeanDefinition.class);
 
     @BeforeEach
     void setUpBeforeEach() {
@@ -42,6 +61,12 @@ class DefaultBeanFactoryTest {
         when(beanDefinitionC.getBeanClassName()).thenReturn("com.codeus.winter.test.BeanC");
         when(beanDefinitionC.isSingleton()).thenReturn(true);
         when(beanDefinitionC.getDependsOn()).thenReturn(new String[]{"BeanA", "BeanB"});
+
+        when(beanDefinitionD.getBeanClassName()).thenReturn("com.codeus.winter.test.BeanD");
+        when(beanDefinitionD.isSingleton()).thenReturn(true);
+
+        when(beanDefinitionE.getBeanClassName()).thenReturn("com.codeus.winter.test.BeanE");
+        when(beanDefinitionE.isSingleton()).thenReturn(true);
     }
 
     @Test
@@ -345,5 +370,71 @@ class DefaultBeanFactoryTest {
         beanFactory.addBeanPostProcessor(beanPostProcessor);
 
         assertThrows(BeanFactoryException.class, beanFactory::initializeBeans);
+    }
+
+    @Test
+    @DisplayName("Should inject list of beans")
+    void testInjectionListOfBeans() {
+        Map<String, BeanDefinition> beanDefinitionMap = new LinkedHashMap<>();
+        beanDefinitionMap.put("BeanA", beanDefinitionA);
+        beanDefinitionMap.put("BeanE", beanDefinitionE);
+        beanDefinitionMap.put("BeanD", beanDefinitionD);
+
+        DefaultBeanFactory factory = new DefaultBeanFactory(beanDefinitionMap);
+
+        BeanA beanA = factory.getBean(BeanA.class);
+        assertNotNull(beanA);
+        BeanD beanD = factory.getBean(BeanD.class);
+        assertNotNull(beanD);
+        BeanE beanE = factory.getBean(BeanE.class);
+        assertNotNull(beanE);
+        List<Common> list = beanD.getList();
+        assertNotNull(beanD.getList());
+        assertEquals(beanA, list.getFirst());
+        assertEquals(beanE, list.get(1));
+    }
+
+    @Test
+    @DisplayName("Should inject Set of beans")
+    void testInjectionSetOfBeans() {
+        Map<String, BeanDefinition> beanDefinitionMap = new LinkedHashMap<>();
+        beanDefinitionMap.put("BeanA", beanDefinitionA);
+        beanDefinitionMap.put("BeanE", beanDefinitionE);
+        beanDefinitionMap.put("BeanD", beanDefinitionD);
+
+        DefaultBeanFactory factory = new DefaultBeanFactory(beanDefinitionMap);
+
+        BeanA beanA = factory.getBean(BeanA.class);
+        assertNotNull(beanA);
+        BeanD beanD = factory.getBean(BeanD.class);
+        assertNotNull(beanD);
+        BeanE beanE = factory.getBean(BeanE.class);
+        assertNotNull(beanE);
+        Set<Common> set = beanD.getSet();
+        assertNotNull(set);
+        assertTrue(set.contains(beanA));
+        assertTrue(set.contains(beanE));
+    }
+
+    @Test
+    @DisplayName("Should inject Map of beans")
+    void testInjectionMapOfBeans() {
+        Map<String, BeanDefinition> beanDefinitionMap = new LinkedHashMap<>();
+        beanDefinitionMap.put("BeanA", beanDefinitionA);
+        beanDefinitionMap.put("BeanE", beanDefinitionE);
+        beanDefinitionMap.put("BeanD", beanDefinitionD);
+
+        DefaultBeanFactory factory = new DefaultBeanFactory(beanDefinitionMap);
+
+        BeanA beanA = factory.getBean(BeanA.class);
+        assertNotNull(beanA);
+        BeanD beanD = factory.getBean(BeanD.class);
+        assertNotNull(beanD);
+        BeanE beanE = factory.getBean(BeanE.class);
+        assertNotNull(beanE);
+        Map<String, Common> map = beanD.getMap();
+        assertNotNull(map);
+        assertEquals(beanA, map.get(beanA.getClass().getName()));
+        assertEquals(beanE, map.get(beanE.getClass().getName()));
     }
 }

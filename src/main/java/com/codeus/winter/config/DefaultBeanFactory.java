@@ -8,11 +8,18 @@ import jakarta.annotation.Nullable;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiFunction;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.function.BiFunction;
 
 /**
@@ -254,16 +261,13 @@ public class DefaultBeanFactory implements BeanFactory {
         Constructor<?>[] constructors = beanClass.getConstructors();
 
         for (Constructor<?> constructor : constructors) {
-            Class<?>[] parameterTypes = constructor.getParameterTypes();
+            Type[] parameterTypes = constructor.getGenericParameterTypes();
             Object[] resolvedDependencies = new Object[parameterTypes.length];
             boolean canResolve = true;
 
             for (int i = 0; i < parameterTypes.length; i++) {
-                Class<?> dependencyClass = parameterTypes[i];
-                Object dependency = singletonBeans.values().stream()
-                        .filter(dependencyClass::isInstance)
-                        .findFirst()
-                        .orElse(null);
+                Type dependencyType = parameterTypes[i];
+                Object dependency = getBeanDependency(dependencyType);
                 if (dependency == null) {
                     canResolve = false;
                     break;
@@ -280,6 +284,39 @@ public class DefaultBeanFactory implements BeanFactory {
             }
         }
         throw new BeanFactoryException("Unable to resolve dependencies for class: " + beanClass.getName());
+    }
+
+    private Object getBeanDependency(Type dependencyType) {
+        Object dependency;
+        Type rawType = getRawType(dependencyType);
+        if (rawType.equals(List.class)) {
+            dependency = getCollectionDependency(dependencyType, 0).toList();
+        } else if (rawType.equals(Set.class)) {
+            dependency = getCollectionDependency(dependencyType, 0).collect(Collectors.toSet());
+        } else if (rawType.equals(Map.class)) {
+            dependency = getCollectionDependency(dependencyType, 1)
+                .collect(Collectors.toMap(bean -> bean.getClass().getName(), bean -> bean));
+        } else {
+            dependency = singletonBeans.values().stream()
+                .filter(bean -> bean.getClass().equals(rawType))
+                .findFirst()
+                .orElse(null);
+        }
+        return dependency;
+    }
+
+    private Type getRawType(Type dependencyType) {
+        return dependencyType instanceof ParameterizedType
+            ? ((ParameterizedType) dependencyType).getRawType()
+            : dependencyType;
+    }
+
+    private Stream<Object> getCollectionDependency(Type parameterType, int valueTypeIndex) {
+        Class<?> dependencyClass =
+            (Class<?>) ((ParameterizedType) parameterType).getActualTypeArguments()[valueTypeIndex];
+        return singletonBeans.values().stream()
+            .filter(bean -> Arrays.stream(bean.getClass().getInterfaces())
+                .anyMatch(interfaceClass -> interfaceClass.isAssignableFrom(dependencyClass)));
     }
 
     private Object applyPostProcessorsBeforeInitialization(Object bean, String beanName) {
