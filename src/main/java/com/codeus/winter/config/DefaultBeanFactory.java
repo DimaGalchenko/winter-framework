@@ -24,8 +24,27 @@ public class DefaultBeanFactory implements BeanFactory {
     private final Map<String, BeanDefinition> beanDefinitions;
     private final List<BeanPostProcessor> postProcessors = new ArrayList<>();
 
+    public DefaultBeanFactory() {
+        this.beanDefinitions = new HashMap<>();
+    }
+
     public DefaultBeanFactory(Map<String, BeanDefinition> beanDefinitions) {
         this.beanDefinitions = beanDefinitions;
+    }
+
+    /**
+     * Registers a single bean definition into the bean factory.
+     *
+     * @param name           the name of the bean
+     * @param beanDefinition the definition of the bean
+     * @throws IllegalArgumentException if a bean with the same name already exists
+     */
+    @Override
+    public void registerBeanDefinition(@Nonnull final String name, @Nonnull final BeanDefinition beanDefinition) {
+        if (beanDefinitions.containsKey(name)) {
+            throw new IllegalArgumentException(String.format("A bean with name '%s' is already defined.", name));
+        }
+        beanDefinitions.put(name, beanDefinition);
     }
 
     /**

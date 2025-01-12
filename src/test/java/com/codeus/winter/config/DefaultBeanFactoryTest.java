@@ -321,4 +321,30 @@ class DefaultBeanFactoryTest {
         assertNotNull(beanA);
         assertEquals(beanAfterPostProcessing, beanA);
     }
+
+    @Test
+    @DisplayName("Should throw exception when beanPostProcessor after initialization returns null")
+    void testThrowExceptionWhenBeanPostProcessorAfterInitReturnNull() {
+        DefaultBeanFactory beanFactory = new DefaultBeanFactory(Map.of(
+                "BeanA", beanDefinitionA
+        ));
+        BeanPostProcessor beanPostProcessor = spy(BeanPostProcessor.class);
+        when(beanPostProcessor.postProcessAfterInitialization(any(), anyString())).thenReturn(null);
+        beanFactory.addBeanPostProcessor(beanPostProcessor);
+
+        assertThrows(BeanFactoryException.class, beanFactory::initializeBeans);
+    }
+
+    @Test
+    @DisplayName("Should throw exception when beanPostProcessor before initialization returns null")
+    void testThrowExceptionWhenBeanPostProcessorBeforeInitReturnNull() {
+        DefaultBeanFactory beanFactory = new DefaultBeanFactory(Map.of(
+                "BeanA", beanDefinitionA
+        ));
+        BeanPostProcessor beanPostProcessor = spy(BeanPostProcessor.class);
+        when(beanPostProcessor.postProcessBeforeInitialization(any(), anyString())).thenReturn(null);
+        beanFactory.addBeanPostProcessor(beanPostProcessor);
+
+        assertThrows(BeanFactoryException.class, beanFactory::initializeBeans);
+    }
 }
